@@ -21,10 +21,6 @@ body {
   margin-bottom: 60px;
 }
 
-.login{
-    width: 300px;
-}
-
-.register {
+.identity{
     width: 400px;
 }

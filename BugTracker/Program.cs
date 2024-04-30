@@ -3,6 +3,7 @@ using BugTracker.Data;
 using BugTracker.Areas.Identity.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.Identity;
 namespace BugTracker
 {
     public class Program

@@ -5,8 +5,8 @@
 }
 
 
-<form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="register">
-    <h2 class="text-center">Create Account</h2>
+<form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="identity">
+    <h2 class="text-center">Create Account.</h2>
     <hr />
     <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
 
@@ -46,17 +46,20 @@
     </div>
 
     <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
-
-    <div class="row py-1">
-        <div class="col text-start">
-            <a id="forgot-password" asp-page="./ForgotPassword">Forgot password?</a>
-        </div>
-        <div class="col text-end">
-            <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">Login</a>
-        </div>
-        @* <p>
-        <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Resend email confirmation</a>
-        </p> *@
-    </div>
 </form>
 
+<div class="row py-1">
+    <div class="col text-start">
+        <a id="forgot-password" asp-page="./ForgotPassword">Forgot password?</a>
+    </div>
+    <div class="col text-end">
+        <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">Login</a>
+    </div>
+    @* <p>
+    <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Resend email confirmation</a>
+    </p> *@
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
