@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using BugTracker.Data;
 using BugTracker.Areas.Identity.Data;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc.Authorization;
 namespace BugTracker
 {
     public class Program
@@ -15,9 +17,18 @@ namespace BugTracker
             builder.Services.AddDefaultIdentity<BugTrackerUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<BugTrackerDbContext>();
 
             // Add services to the container.
-            builder.Services.AddControllersWithViews();
-
+            builder.Services.AddControllersWithViews(
+                // Specifies a global filter ensuring that ever controller needs a logged in user
+                // Secure by default scenario
+                // If you want to opt out use [AlllowAnonymous] attribute
+                o => o.Filters.Add(new AuthorizeFilter())
+                );
             builder.Services.AddRazorPages();
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(o => o.LoginPath= "/Identity/Account/Login");
+
+            // Dependency injection containers
+            // Inject into controller on constructor 
 
 
             var app = builder.Build();
@@ -35,6 +46,8 @@ namespace BugTracker
 
             app.UseRouting();
 
+            // Never map after endpoints as it needs to happen before request
+            app.UseAuthentication(); 
             app.UseAuthorization();
 
             app.MapControllerRoute(
