@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using BugTracker.Data;
+using BugTracker.Areas.Identity.Data;
 namespace BugTracker
 {
     public class Program
@@ -5,9 +8,17 @@ namespace BugTracker
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            var connectionString = builder.Configuration.GetConnectionString("BugTrackerDbContextConnection") ?? throw new InvalidOperationException("Connection string 'BugTrackerDbContextConnection' not found.");
+
+            builder.Services.AddDbContext<BugTrackerDbContext>(options => options.UseSqlServer(connectionString));
+
+            builder.Services.AddDefaultIdentity<BugTrackerUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<BugTrackerDbContext>();
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddRazorPages();
+
 
             var app = builder.Build();
 
@@ -29,6 +40,8 @@ namespace BugTracker
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+
+            app.MapRazorPages();
 
             app.Run();
         }
