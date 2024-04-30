@@ -20,3 +20,11 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.login{
+    width: 300px;
+}
+
+.register {
+    width: 400px;
+}

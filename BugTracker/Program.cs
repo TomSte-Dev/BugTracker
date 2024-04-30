@@ -24,8 +24,7 @@ namespace BugTracker
                 o => o.Filters.Add(new AuthorizeFilter())
                 );
             builder.Services.AddRazorPages();
-            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(o => o.LoginPath= "/Identity/Account/Login");
+            builder.Services.AddAuthentication();
 
             // Dependency injection containers
             // Inject into controller on constructor 
