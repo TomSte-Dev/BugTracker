@@ -9,6 +9,54 @@
     <link rel="stylesheet" href="~/BugTracker.styles.css" asp-append-version="true" />
 </head>
 <body>
+    <div class="container-fluid">
+        <div class="wrapper">
+            <!-- Left sidebar -->
+            <div class="left-sidebar" id="left-sidebar">
+                <!-- Content for left sidebar -->
+                <a class="navbar-brand text-center" asp-area="" asp-controller="Home" asp-action="Index">BugTracker</a>
+                <hr />
+                <ul class="navbar-nav flex-grow-1">
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Content area -->
+            <div class="content-area">
+                <!-- Top navbar -->
+                <div class="top-navbar">
+                    <!-- Top navbar -->
+                    <nav class="navbar navbar-expand-md navbar-light bg-light">
+                        <!-- Navbar content for top navbar -->
+                        <button class="navbar-toggler" type="button" id="sidebar-toggler" aria-expanded="false" aria-label="Toggle left sidebar">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <!-- Move the login partial to the right -->
+                        <div class="ml-auto">
+                            <partial name="_LoginPartial" />
+                        </div>
+                    </nav>
+                </div>
+
+                <!-- Main content -->
+                <div>
+                    <!-- Your main content goes here -->
+                Right Column Content
+                <main role="main" class="pb-3">
+                    @RenderBody()
+                </main>
+            </div>
+        </div>
+    </div>
+
+
+
+@* 
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
@@ -33,12 +81,14 @@
     </header>
     <main role="main" class="pb-3">
         @RenderBody()
-    </main>
+    </main> *@
 
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+ 
