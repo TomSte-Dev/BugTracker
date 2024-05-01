@@ -21,6 +21,63 @@ body {
   margin-bottom: 60px;
 }
 
+
 .identity{
     width: 400px;
+}
+
+body, html {
+    height: 100%;
+    margin: 0;
+}
+
+.container-fluid {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    margin-left: 0px;
+}
+
+.wrapper {
+    display: flex;
+    flex: 1;
+}
+
+.left-sidebar {
+    background-color: #f8f9fa; /* Light gray background */
+    color: #212529; /* Text color */
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+}
+
+    .left-sidebar .navbar-brand {
+        margin-top: 10px;
+        margin-bottom: auto;
+    }
+
+    .left-sidebar nav {
+        padding: 10px;
+    }
+
+    /* Separate the list items with borders */
+    .left-sidebar .navbar-nav .nav-item {
+        border-bottom: 1px solid #dee2e6; /* Light gray border */
+    }
+
+        .left-sidebar .navbar-nav .nav-item:last-child {
+            border-bottom: none; /* Remove border from the last item */
+        }
+
+.content-area {
+    flex: 1;
+    padding-top: 60px; /* Adjust padding-top to match the height of the top navbar */
+}
+
+.top-navbar {
+    position: fixed;
+    top: 0;
+    right: 0; /* Align to the right side of the screen */
+    background-color: #fff; /* Set background color */
+    padding: 10px; /* Add padding for spacing */
 }
