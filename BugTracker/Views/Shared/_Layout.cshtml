@@ -23,23 +23,22 @@
     <!-- Topbar -->
     <nav class="navbar navbar-expand navbar-light bg-white topbar static-top shadow">
 
-        <!-- Sidebar - Brand -->
+        <!-- Brand -->
         <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
             <h4 class="navbar-text my-auto">Bugtracker</h4>
         </a>
 
-        <div class="topbar-divider d-none d-sm-block"></div>
 
         <!-- Sidebar Toggle (Topbar) -->
-        <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle p-0 ">
+@*         <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle p-0 ">
             <i class="fa fa-bars my-2" style="font-size: 1.5rem;"></i>
-        </button>
+        </button> *@
 
 
         <!-- Topbar Navbar -->
         <ul class="navbar-nav ml-auto">
 
-            <li class="nav-item my-auto">
+            @* <li class="nav-item my-auto">
                 <!-- Topbar Search -->
                 <form class="d-none d-md-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
                     <div class="input-group">
@@ -77,7 +76,7 @@
                         </div>
                     </form>
                 </div>
-            </li>
+            </li> *@
 
             <!-- Nav Item - Alerts -->
             <li class="nav-item dropdown no-arrow mx-1">
@@ -148,7 +147,7 @@
                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <span class="mr-2 d-none d-lg-inline text-gray-600 small">@UserManager.GetUserAsync(User).Result.FirstName</span>
                     <img class="img-profile rounded-circle"
-                         src="img/undraw_profile.svg">
+                         src="~/img/undraw_profile.svg">
                 </a>
                 <!-- Dropdown - User Information -->
                 <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -180,7 +179,7 @@
             <div id="content">
 
                 <!-- Begin Page Content -->
-                <div class="container-fluid p-0">
+                <div class="container-fluid p-0 bg-white">
                     @RenderBody()
                 </div>
                 <!-- /.container-fluid -->
