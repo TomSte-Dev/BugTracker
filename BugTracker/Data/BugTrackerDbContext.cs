@@ -17,7 +17,6 @@ public class BugTrackerDbContext : IdentityDbContext<BugTrackerUser>
 
     public DbSet<Project> Projects { get; set; }
     public DbSet<Ticket> Tickets { get; set; }
-    public DbSet<TicketAssignee> TicketAssignees { get; set; }
     public DbSet<ProjectUser> ProjectUsers { get; set; }
     public DbSet<Role> Roles { get; set; }
     public DbSet<Status> Statuses { get; set; }

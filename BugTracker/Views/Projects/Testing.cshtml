@@ -1,0 +1,146 @@
+﻿@model IEnumerable<BugTracker.Models.Ticket>
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="row">
+    <div class="col-auto p-0">
+        <!-- Sidebar -->
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark" >
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Heading -->
+            <div class="sidebar-heading">
+                Dashboard
+            </div>
+
+            <!-- Nav Item - Dashboard -->
+            <li class="nav-item">
+                <a class="nav-link" href="index.html">
+                    <span>Board</span>
+                </a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Heading -->
+            <div class="sidebar-heading">
+                Project Management
+            </div>
+
+            <li class="nav-item">
+                <a class="nav-link" href="index.html">
+                    <span>Manage Team</span>
+                </a>
+            </li>
+
+        </ul>
+        <!-- End of Sidebar -->
+
+    </div>
+
+    <div class="col p-0">
+        <p>
+            <button class="btn btn-primary mr-auto mw-100" type="button" asp-action="Create" data-toggle="modal" data-target="#CreateTicket">
+                Create
+            </button>
+        </p>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ProjectId)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Title)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Description)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.StatusId)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ReporterId)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.DateCreated)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.LastUpdateTime)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ProjectId)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Title)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Description)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.StatusId)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ReporterId)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DateCreated)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.LastUpdateTime)
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.TicketId">Edit</a> |
+                            <a asp-action="Details" asp-route-id="@item.TicketId">Details</a> |
+                            <a asp-action="Delete" asp-route-id="@item.TicketId">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+
+<!--
+    Status
+    Title
+    Description
+    Assignee
+    Reporter
+-->
+
+<div class="modal fade" id="CreateTicket" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Create Ticket</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Include the partial view here -->
+                <partial name="_CreateTicket" />
+@*                 @Html.Partial("_CreateTicket") *@
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                <input type="submit" value="Create" class="btn btn-primary" form="createTicketForm" />
+            </div>
+        </div>
+    </div>
+</div>
