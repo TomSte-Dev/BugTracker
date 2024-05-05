@@ -15,7 +15,7 @@ namespace BugTracker
 
             builder.Services.AddDbContext<BugTrackerDbContext>(options => options.UseSqlServer(connectionString));
 
-            builder.Services.AddDefaultIdentity<BugTrackerUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<BugTrackerDbContext>();
+            builder.Services.AddDefaultIdentity<BugTrackerUser>(options => options.SignIn.RequireConfirmedAccount = false).AddEntityFrameworkStores<BugTrackerDbContext>();
 
             // Add services to the container.
             builder.Services.AddControllersWithViews(
