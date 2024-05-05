@@ -73,7 +73,7 @@ namespace BugTracker.Migrations
                     ProjectUserId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ProjectId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false),
+                    UserEmail = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RoleId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -117,8 +117,8 @@ namespace BugTracker.Migrations
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     StatusId = table.Column<int>(type: "int", nullable: false),
-                    AssigneeId = table.Column<int>(type: "int", nullable: false),
-                    ReporterId = table.Column<int>(type: "int", nullable: false),
+                    AssigneeEmail = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ReporterEmail = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastUpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },

@@ -7,13 +7,15 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BugTracker.Data;
 using BugTracker.Models;
+using Microsoft.AspNetCore.Identity;
+using BugTracker.Areas.Identity.Data;
+using System.Security.Claims;
 
 namespace BugTracker.Controllers
 {
     public class ProjectsController : Controller
     {
         private readonly BugTrackerDbContext _context;
-
         public ProjectsController(BugTrackerDbContext context)
         {
             _context = context;
@@ -60,8 +62,26 @@ namespace BugTracker.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(project);
+                _context.Projects.Add(project);
                 await _context.SaveChangesAsync();
+
+                var firstUser = new ProjectUser
+                {
+                    ProjectId = project.ProjectId,
+                    UserEmail = User.Identity.Name,
+                    RoleId = _context.Roles
+                        .Where(r => r.Title == "Admin")
+                        .Select(i => i.RoleId)
+                        .FirstOrDefault()
+                };
+
+                if(firstUser != null)
+                {
+                    _context.ProjectUsers.Add(firstUser);
+                }
+
+                await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
             return View(project);
@@ -144,6 +164,8 @@ namespace BugTracker.Controllers
             var project = await _context.Projects.FindAsync(id);
             if (project != null)
             {
+                var users = _context.ProjectUsers.Where(p => p.ProjectId == id).ToList();
+                _context.ProjectUsers.RemoveRange(users);
                 _context.Projects.Remove(project);
             }
 
@@ -159,31 +181,6 @@ namespace BugTracker.Controllers
         #endregion
 
         #region Project Dashboard
-
-        public IActionResult Dashboard(int projectId)
-        {
-            var tickets = _context.Tickets.Where(t => t.ProjectId == projectId);
-
-            return View(tickets);
-        }
-
-        //        Status
-        //        Title
-        //        Description
-        //        Assignee
-        //        Reporter
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateTicket([Bind("TicketId,ProjectId,Title,Description,StatusId,AssigneeId,ReporterId,DateCreated,LastUpdateTime")] Ticket ticket)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(ticket);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(ticket);
-        }
 
 
         #endregion

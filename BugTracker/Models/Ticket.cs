@@ -7,8 +7,8 @@ public class Ticket
     public string Title { get; set; }
     public string Description { get; set; }
     public int StatusId { get; set; }
-    public int AssigneeId { get; set; }
-    public int ReporterId { get; set; }
+    public string AssigneeEmail { get; set; }
+    public string ReporterEmail { get; set; }
     //public string Priority { get; set; }
     public DateTime DateCreated { get; set; }
     public DateTime LastUpdateTime { get; set; }

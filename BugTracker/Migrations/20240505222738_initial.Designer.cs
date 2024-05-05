@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BugTracker.Migrations
 {
     [DbContext(typeof(BugTrackerDbContext))]
-    [Migration("20240505195618_initial")]
+    [Migration("20240505222738_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -133,8 +133,9 @@ namespace BugTracker.Migrations
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("UserEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ProjectUserId");
 
@@ -183,8 +184,9 @@ namespace BugTracker.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TicketId"));
 
-                    b.Property<int>("AssigneeId")
-                        .HasColumnType("int");
+                    b.Property<string>("AssigneeEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
@@ -199,8 +201,9 @@ namespace BugTracker.Migrations
                     b.Property<int>("ProjectId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ReporterId")
-                        .HasColumnType("int");
+                    b.Property<string>("ReporterEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("StatusId")
                         .HasColumnType("int");
