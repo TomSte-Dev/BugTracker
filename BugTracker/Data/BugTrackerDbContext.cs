@@ -1,7 +1,10 @@
 ﻿using BugTracker.Areas.Identity.Data;
+using BugTracker.Models;
+using BugTracker.Utility;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace BugTracker.Data;
 
@@ -11,6 +14,13 @@ public class BugTrackerDbContext : IdentityDbContext<BugTrackerUser>
         : base(options)
     {
     }
+
+    public DbSet<Project> Projects { get; set; }
+    public DbSet<Ticket> Tickets { get; set; }
+    public DbSet<TicketAssignee> TicketAssignees { get; set; }
+    public DbSet<ProjectUser> ProjectUsers { get; set; }
+    public DbSet<Role> Roles { get; set; }
+    public DbSet<Status> Statuses { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

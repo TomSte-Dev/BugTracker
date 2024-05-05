@@ -4,6 +4,7 @@ using BugTracker.Areas.Identity.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Identity;
+using BugTracker.Utility;
 namespace BugTracker
 {
     public class Program
@@ -55,6 +56,11 @@ namespace BugTracker
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
             app.MapRazorPages();
+
+            // Seed initial data for appointments and users into the database.
+
+            // Only if the databases are empty
+            DbInitializer.Seed(app);
 
             app.Run();
         }
