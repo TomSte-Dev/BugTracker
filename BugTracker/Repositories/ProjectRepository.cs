@@ -64,7 +64,7 @@ public class ProjectRepository : IProjectRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<IEnumerable<string>> GetProjectUserEmailsByProjectId(int? id)
+    public async Task<IEnumerable<string>> GetUserEmailsByProjectId(int? id)
     {
         var userEmails = await _context.ProjectUsers
             .Where(u => u.ProjectId == id)
@@ -102,5 +102,14 @@ public class ProjectRepository : IProjectRepository
             .ToListAsync();
 
         return projects;
+    }
+
+    public async Task<IEnumerable<ProjectUser>> GetUsersByProjectId(int? id)
+    {
+        var users = await _context.ProjectUsers
+            .Where(u => u.ProjectId == id)
+            .ToListAsync();
+
+        return users;
     }
 }

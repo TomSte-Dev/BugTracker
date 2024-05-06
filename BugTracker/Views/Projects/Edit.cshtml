@@ -2,12 +2,13 @@
 
 @{
     ViewData["Title"] = "Edit";
+    Layout = "_TicketLayout";
 }
 
-<div class="mx-5 my-3">
-    <h2>@ViewData["Title"]</h2>
+<div class="mx-5 py-3">
+    <h2>Project details</h2>
     <div class="row pb-2">
-        <div class="card shadow col-6 pt-3">
+        <div class="card shadow col-auto pt-3">
             <form asp-action="Edit">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <input type="hidden" asp-for="ProjectId" />
@@ -18,16 +19,41 @@
                 </div>
                 <div class="form-group">
                     <label asp-for="Description" class="control-label"></label>
-                    <input asp-for="Description" class="form-control" />
+                    <textarea asp-for="Description" class="form-control" style=" height:200px; width: 400px"></textarea>
                     <span asp-validation-for="Description" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <input type="submit" value="Save" class="btn btn-primary" />
+                    <a class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">
+                        Delete
+                    </a>
                 </div>
             </form>
         </div>
     </div>
-    <a asp-action="Index">Back to List</a>
+</div>
+
+<!-- Delete Modal-->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Are you sure?</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">Select "Delete" below to confirm.</div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                <form asp-controller="Projects" asp-action="Delete" asp-route-id="@Model.ProjectId" method="post">
+                    <input type="hidden" asp-for="ProjectId" />
+                    <input type="submit" value="Delete" class="btn btn-danger" />
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section Scripts {

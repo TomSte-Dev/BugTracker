@@ -188,14 +188,14 @@
 
                     <!-- Nav Item - Pages Collapse Menu -->
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link" asp-controller="Tickets" asp-action="TeamMembers" asp-route-projectId="@CurrentProjectSingleton.Instance.CurrentProject.ProjectId">
                             <i class="fas fa-user-plus"></i>
                             <span>Manage Team</span>
                         </a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link" asp-controller="Projects" asp-action="Edit" asp-route-Id="@CurrentProjectSingleton.Instance.CurrentProject.ProjectId">
                             <i class="fas fa-fw fa-cog"></i>
                             <span>Project Settings</span>
                         </a>
@@ -215,13 +215,13 @@
             </div>
             <div class="col-auto p-0">
                 <!-- Content Wrapper -->
-                <div id="content-wrapper" class="d-flex flex-column bg-white">
+                <div id="content-wrapper" class="d-flex flex-column bg-transparent">
 
                     <!-- Main Content -->
                     <div id="content">
 
                         <!-- Begin Page Content -->
-                        <div class="container-fluid p-0 bg-white ">
+                        <div class="container-fluid p-0 bg-transparent">
                             @RenderBody()
                         </div>
                         <!-- /.container-fluid -->

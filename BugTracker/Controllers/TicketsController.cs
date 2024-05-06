@@ -54,6 +54,25 @@ namespace BugTracker.Controllers
             return View(tickets);
         }
 
+        public async Task<IActionResult> TeamMembers(int? projectId)
+        {
+            if (projectId == null)
+            {
+                return NotFound();
+            }
+
+            // Should check that current user is a project user.
+            bool isUserAssigned = await _projectRepository.IsUserAssignedToProject(projectId, User.Identity.Name);
+            if (!isUserAssigned)
+            {
+                return Unauthorized();
+            }
+
+            var users = await _projectRepository.GetUsersByProjectId(projectId);
+
+            return View(users);
+        }
+
 
         // GET: Tickets/Create
         public async Task<IActionResult> Create()
@@ -61,7 +80,7 @@ namespace BugTracker.Controllers
             int projectId = CurrentProjectSingleton.Instance.CurrentProject.ProjectId;
             var statuses = _ticketRepository.AllStatuses;
 
-            var userEmails = await _projectRepository.GetProjectUserEmailsByProjectId(projectId); // Task<IEnumerable<string>>
+            var userEmails = await _projectRepository.GetUserEmailsByProjectId(projectId); // Task<IEnumerable<string>>
 
             // Pass the list of user emails to the view
             ViewBag.UserEmails = new SelectList(userEmails);
@@ -108,7 +127,7 @@ namespace BugTracker.Controllers
             int projectId = CurrentProjectSingleton.Instance.CurrentProject.ProjectId;
             var statuses = _ticketRepository.AllStatuses;
 
-            var userEmails = await _projectRepository.GetProjectUserEmailsByProjectId(projectId); // Task<IEnumerable<string>>
+            var userEmails = await _projectRepository.GetUserEmailsByProjectId(projectId); // Task<IEnumerable<string>>
 
             // Pass the list of user emails to the view
             ViewBag.UserEmails = new SelectList(userEmails);

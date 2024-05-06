@@ -12,6 +12,7 @@ using BugTracker.Areas.Identity.Data;
 using System.Security.Claims;
 using Microsoft.DotNet.Scaffolding.Shared.ProjectModel;
 using BugTracker.Repositories;
+using BugTracker.Utility;
 
 namespace BugTracker.Controllers
 {
@@ -102,13 +103,15 @@ namespace BugTracker.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "Tickets", new { CurrentProjectSingleton.Instance.CurrentProject.ProjectId });
             }
             return View(project);
         }
 
-        // GET: Projects/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // POST: Projects/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int? id)
         {
             if (id == null)
             {
@@ -121,14 +124,6 @@ namespace BugTracker.Controllers
                 return NotFound();
             }
 
-            return View(project);
-        }
-
-        // POST: Projects/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
             await _projectRepository.DeleteProjectById(id);
             return RedirectToAction(nameof(Index));
         }
