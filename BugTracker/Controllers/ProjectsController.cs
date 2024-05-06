@@ -10,15 +10,19 @@ using BugTracker.Models;
 using Microsoft.AspNetCore.Identity;
 using BugTracker.Areas.Identity.Data;
 using System.Security.Claims;
+using Microsoft.DotNet.Scaffolding.Shared.ProjectModel;
+using BugTracker.Repositories;
 
 namespace BugTracker.Controllers
 {
     public class ProjectsController : Controller
     {
-        private readonly BugTrackerDbContext _context;
-        public ProjectsController(BugTrackerDbContext context)
+        private readonly IProjectRepository _projectRepository;
+        private readonly ITicketRepository _ticketRepository;
+        public ProjectsController(IProjectRepository projectRepository, ITicketRepository ticketRepository)
         {
-            _context = context;
+            _projectRepository = projectRepository;
+            _ticketRepository = ticketRepository;
         }
 
         #region Project Creation
@@ -26,7 +30,7 @@ namespace BugTracker.Controllers
         // GET: Projects
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Projects.ToListAsync());
+            return View(_projectRepository.AllProjects);
         }
 
         // GET: Projects/Details/5
@@ -37,8 +41,7 @@ namespace BugTracker.Controllers
                 return NotFound();
             }
 
-            var project = await _context.Projects
-                .FirstOrDefaultAsync(m => m.ProjectId == id);
+            var project = _projectRepository.GetProjectById(id);
             if (project == null)
             {
                 return NotFound();
@@ -62,25 +65,7 @@ namespace BugTracker.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Projects.Add(project);
-                await _context.SaveChangesAsync();
-
-                var firstUser = new ProjectUser
-                {
-                    ProjectId = project.ProjectId,
-                    UserEmail = User.Identity.Name,
-                    RoleId = _context.Roles
-                        .Where(r => r.Title == "Admin")
-                        .Select(i => i.RoleId)
-                        .FirstOrDefault()
-                };
-
-                if(firstUser != null)
-                {
-                    _context.ProjectUsers.Add(firstUser);
-                }
-
-                await _context.SaveChangesAsync();
+                await _projectRepository.AddProject(project, User.Identity.Name);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -95,7 +80,7 @@ namespace BugTracker.Controllers
                 return NotFound();
             }
 
-            var project = await _context.Projects.FindAsync(id);
+            var project = _projectRepository.GetProjectById(id);
             if (project == null)
             {
                 return NotFound();
@@ -119,8 +104,7 @@ namespace BugTracker.Controllers
             {
                 try
                 {
-                    _context.Update(project);
-                    await _context.SaveChangesAsync();
+                    await _projectRepository.UpdateProject(project);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -146,8 +130,7 @@ namespace BugTracker.Controllers
                 return NotFound();
             }
 
-            var project = await _context.Projects
-                .FirstOrDefaultAsync(m => m.ProjectId == id);
+            var project = _projectRepository.GetProjectById(id);
             if (project == null)
             {
                 return NotFound();
@@ -161,21 +144,13 @@ namespace BugTracker.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var project = await _context.Projects.FindAsync(id);
-            if (project != null)
-            {
-                var users = _context.ProjectUsers.Where(p => p.ProjectId == id).ToList();
-                _context.ProjectUsers.RemoveRange(users);
-                _context.Projects.Remove(project);
-            }
-
-            await _context.SaveChangesAsync();
+            await _projectRepository.DeleteProjectById(id);
             return RedirectToAction(nameof(Index));
         }
 
         private bool ProjectExists(int id)
         {
-            return _context.Projects.Any(e => e.ProjectId == id);
+            return _projectRepository.AllProjects.Any(e => e.ProjectId == id);
         }
 
         #endregion

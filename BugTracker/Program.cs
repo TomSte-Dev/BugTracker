@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Identity;
 using BugTracker.Utility;
+using BugTracker.Repositories;
 namespace BugTracker
 {
     public class Program
@@ -17,6 +18,13 @@ namespace BugTracker
             builder.Services.AddDbContext<BugTrackerDbContext>(options => options.UseSqlServer(connectionString));
 
             builder.Services.AddDefaultIdentity<BugTrackerUser>(options => options.SignIn.RequireConfirmedAccount = false).AddEntityFrameworkStores<BugTrackerDbContext>();
+
+            // Register the Repository class to be injected whenever an IRepository dependency is requested.
+            // This enables dependency injection, allowing components to easily obtain instances of AppointmentRepository
+            // without needing to create them directly.
+            builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+            builder.Services.AddScoped<ITicketRepository, TicketRepository>();
+
 
             // Add services to the container.
             builder.Services.AddControllersWithViews(
