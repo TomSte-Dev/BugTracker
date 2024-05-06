@@ -11,7 +11,7 @@ public interface IProjectRepository
 
     //CRUD
     Task AddProject(Project project, string currentUser);
-    Project GetProjectById(int? id);
+    Task<Project?> GetProjectById(int? id);
     Task UpdateProject(Project project);
     Task DeleteProjectById(int? id);
 

@@ -40,9 +40,9 @@ public class ProjectRepository : IProjectRepository
         await _context.SaveChangesAsync();
     }
 
-    public Project GetProjectById(int? id)
+    public async Task<Project?> GetProjectById(int? id)
     {
-        return _context.Projects.SingleOrDefault(i => i.ProjectId == id);
+        return await _context.Projects.FindAsync(id);
     }
 
     public async Task UpdateProject(Project project)

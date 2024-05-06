@@ -7,41 +7,26 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BugTracker.Data;
 using BugTracker.Models;
+using BugTracker.Repositories;
 
 namespace BugTracker.Controllers
 {
     public class TicketsController : Controller
     {
-        private readonly BugTrackerDbContext _context;
+        private readonly ITicketRepository _ticketRepository;
 
-        public TicketsController(BugTrackerDbContext context)
+        public TicketsController(ITicketRepository ticketRepository)
         {
-            _context = context;
+            _ticketRepository = ticketRepository;
         }
 
         // GET: Tickets
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Tickets.ToListAsync());
+            // Needs to be from the current selected project
+            return View(_ticketRepository.AllTickets);
         }
 
-        // GET: Tickets/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var ticket = await _context.Tickets
-                .FirstOrDefaultAsync(m => m.TicketId == id);
-            if (ticket == null)
-            {
-                return NotFound();
-            }
-
-            return View(ticket);
-        }
 
         // GET: Tickets/Create
         public IActionResult Create()
@@ -58,8 +43,7 @@ namespace BugTracker.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(ticket);
-                await _context.SaveChangesAsync();
+                await _ticketRepository.AddTicket(ticket);
                 return RedirectToAction(nameof(Index));
             }
             return View(ticket);
@@ -73,7 +57,7 @@ namespace BugTracker.Controllers
                 return NotFound();
             }
 
-            var ticket = await _context.Tickets.FindAsync(id);
+            var ticket = _ticketRepository.GetTicketById(id);
             if (ticket == null)
             {
                 return NotFound();
@@ -97,8 +81,7 @@ namespace BugTracker.Controllers
             {
                 try
                 {
-                    _context.Update(ticket);
-                    await _context.SaveChangesAsync();
+                    await _ticketRepository.UpdateTicket(ticket);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -124,8 +107,7 @@ namespace BugTracker.Controllers
                 return NotFound();
             }
 
-            var ticket = await _context.Tickets
-                .FirstOrDefaultAsync(m => m.TicketId == id);
+            var ticket = await _ticketRepository.GetTicketById(id);
             if (ticket == null)
             {
                 return NotFound();
@@ -139,19 +121,13 @@ namespace BugTracker.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var ticket = await _context.Tickets.FindAsync(id);
-            if (ticket != null)
-            {
-                _context.Tickets.Remove(ticket);
-            }
-
-            await _context.SaveChangesAsync();
+            await _ticketRepository.DeleteTicketById(id);
             return RedirectToAction(nameof(Index));
         }
 
         private bool TicketExists(int id)
         {
-            return _context.Tickets.Any(e => e.TicketId == id);
+            return _ticketRepository.AllTickets.Any(e => e.TicketId == id);
         }
     }
 }

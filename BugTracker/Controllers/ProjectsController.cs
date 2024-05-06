@@ -18,11 +18,10 @@ namespace BugTracker.Controllers
     public class ProjectsController : Controller
     {
         private readonly IProjectRepository _projectRepository;
-        private readonly ITicketRepository _ticketRepository;
-        public ProjectsController(IProjectRepository projectRepository, ITicketRepository ticketRepository)
+        public ProjectsController(IProjectRepository projectRepository)
         {
             _projectRepository = projectRepository;
-            _ticketRepository = ticketRepository;
+
         }
 
         #region Project Creation
@@ -33,22 +32,6 @@ namespace BugTracker.Controllers
             return View(_projectRepository.AllProjects);
         }
 
-        // GET: Projects/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var project = _projectRepository.GetProjectById(id);
-            if (project == null)
-            {
-                return NotFound();
-            }
-
-            return View(project);
-        }
 
         // GET: Projects/Create
         public IActionResult Create()
