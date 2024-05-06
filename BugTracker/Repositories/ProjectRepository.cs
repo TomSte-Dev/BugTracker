@@ -116,4 +116,11 @@ public class ProjectRepository : IProjectRepository
 
         return users;
     }
+
+    public async Task AddProjectUser(ProjectUser projectUser)
+    {
+        await _context.ProjectUsers.AddAsync(projectUser);
+        await _context.SaveChangesAsync();
+
+    }
 }

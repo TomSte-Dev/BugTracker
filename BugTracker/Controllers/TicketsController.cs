@@ -75,9 +75,22 @@ namespace BugTracker.Controllers
             // Pass roles to the ViewBag
             ViewBag.Roles = roles;
 
+
             return View(users);
         }
 
+        public async Task<IActionResult> AddPeople([Bind("ProjectId,UserEmail,RoleId")] ProjectUser projectUser)
+        {
+            if (ModelState.IsValid)
+            {
+
+                await _projectRepository.AddProjectUser(projectUser);
+                return RedirectToAction("TeamMembers", "Tickets", new { CurrentProjectSingleton.Instance.CurrentProject.ProjectId });
+            }
+
+            // Redirect to manage team
+            return View();
+        }
 
         // GET: Tickets/Create
         public async Task<IActionResult> Create()

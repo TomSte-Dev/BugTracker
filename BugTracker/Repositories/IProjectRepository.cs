@@ -22,4 +22,6 @@ public interface IProjectRepository
 
     public Task<bool> IsUserAssignedToProject(int? projectId, string? user);
 
+    public Task AddProjectUser(ProjectUser projectUser);
+
 }
