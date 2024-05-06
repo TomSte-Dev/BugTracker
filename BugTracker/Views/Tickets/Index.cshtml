@@ -5,74 +5,87 @@
     Layout = "_TicketLayout";
 }
 
+<div class="mx-5 my-3">
+    <h2>Ticket list</h2>
+    <div class="pb-2">
+        <!-- Search -->
+        <form class="d-none d-inline-block form-inline mr-auto mw-100 navbar-search">
+            <div class="input-group">
+                <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
+                       aria-label="Search" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="button">
+                        <i class="fas fa-search fa-sm"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
 
-<h1>Index</h1>
+        <!-- Create -->
+        <a asp-action="Create" class="btn btn-primary mr-auto mw-100" type="button">Create New</a>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.ProjectId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StatusId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AssigneeEmail)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ReporterEmail)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DateCreated)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LastUpdateTime)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ProjectId)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Title)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Description)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.StatusId)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.AssigneeEmail)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ReporterEmail)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DateCreated)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.LastUpdateTime)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.TicketId">Edit</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+    </div>
+    <div class="card shadow mb-5">
+        <div class="table-responsive ">
+            <table class="table table-bordered m-0" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Title)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Description)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.StatusId)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.AssigneeEmail)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.ReporterEmail)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.DateCreated)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.LastUpdateTime)
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Title)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Description)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.StatusId)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.AssigneeEmail)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ReporterEmail)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.DateCreated)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.LastUpdateTime)
+                            </td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@item.TicketId">Edit</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
