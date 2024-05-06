@@ -10,6 +10,7 @@ using BugTracker.Models;
 using BugTracker.Repositories;
 using BugTracker.Utility;
 using Microsoft.CodeAnalysis;
+using System.Data;
 
 namespace BugTracker.Controllers
 {
@@ -75,6 +76,8 @@ namespace BugTracker.Controllers
             // Pass roles to the ViewBag
             ViewBag.Roles = roles;
 
+            // Pass the list of statuses to the view
+            ViewBag.RoleList = new SelectList(roles, "RoleId", "Title");
 
             return View(users);
         }
@@ -83,12 +86,17 @@ namespace BugTracker.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Check that user doesn't currently exist
+                var userEmails = await _projectRepository.GetUserEmailsByProjectId(CurrentProjectSingleton.Instance.CurrentProject.ProjectId);
+                if (!userEmails.Contains(projectUser.UserEmail))
+                {
+                    await _projectRepository.AddProjectUser(projectUser);
+                }
 
-                await _projectRepository.AddProjectUser(projectUser);
+                // Redirect to manage team
                 return RedirectToAction("TeamMembers", "Tickets", new { CurrentProjectSingleton.Instance.CurrentProject.ProjectId });
             }
 
-            // Redirect to manage team
             return View();
         }
 
