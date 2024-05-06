@@ -27,7 +27,8 @@
     <nav class="navbar navbar-expand navbar-light bg-white topbar static-top shadow">
 
         <!-- Brand -->
-        <a class="m-0 d-flex align-items-center justify-content-center" asp-page="/Index">
+        <a class="m-0 d-flex align-items-center justify-content-center" 
+        asp-controller="Tickets" asp-route-projectId="@CurrentProjectSingleton.Instance.CurrentProject.ProjectId">
             <div class="sidebar-brand-icon rotate-n-15">
                 <img class="" src="~/img/bug-icon.svg" style="width:3rem; height:3rem">
             </div>
