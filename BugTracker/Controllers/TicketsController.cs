@@ -9,6 +9,7 @@ using BugTracker.Data;
 using BugTracker.Models;
 using BugTracker.Repositories;
 using BugTracker.Utility;
+using Microsoft.CodeAnalysis;
 
 namespace BugTracker.Controllers
 {
@@ -32,15 +33,12 @@ namespace BugTracker.Controllers
             }
 
             // Should check that current user is a project user.
-            if (await _projectRepository.IsUserAssignedToProject(projectId, User.Identity.Name))
+            if (!await _projectRepository.IsUserAssignedToProject(projectId, User.Identity.Name))
             {
                 return Unauthorized();
             }
 
             var project = await _projectRepository.GetProjectById(projectId);
-            
-
-
             if (project != null)
             {
                 CurrentProjectSingleton.Instance.CurrentProject = project;
@@ -56,8 +54,17 @@ namespace BugTracker.Controllers
 
 
         // GET: Tickets/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            int projectId = CurrentProjectSingleton.Instance.CurrentProject.ProjectId;
+
+            var userEmails = await _projectRepository.GetProjectUserEmailsByProjectId(projectId); // Task<IEnumerable<string>>
+
+            // Pass the list of user emails to the view
+            ViewBag.UserEmails = new SelectList(userEmails);
+
+
+
             return View();
         }
 
@@ -84,7 +91,7 @@ namespace BugTracker.Controllers
                 return NotFound();
             }
 
-            var ticket = _ticketRepository.GetTicketById(id);
+            var ticket = await _ticketRepository.GetTicketById(id);
             if (ticket == null)
             {
                 return NotFound();

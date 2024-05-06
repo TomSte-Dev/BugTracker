@@ -15,9 +15,9 @@ public interface IProjectRepository
     Task DeleteProjectById(int? id);
 
     // Project users
-    public Task<IEnumerable<ProjectUser>> GetProjectUsersByProjectId(int? id);
+    public Task<IEnumerable<string>> GetProjectUserEmailsByProjectId(int? id);
     public Task<IEnumerable<Project>> GetProjectsByUser(string user);
 
-    public Task<bool> IsUserAssignedToProject(int? projectId, string user);
+    public Task<bool> IsUserAssignedToProject(int? projectId, string? user);
 
 }

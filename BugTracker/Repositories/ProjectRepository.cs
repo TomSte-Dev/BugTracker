@@ -64,12 +64,18 @@ public class ProjectRepository : IProjectRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<IEnumerable<ProjectUser>> GetProjectUsersByProjectId(int? id)
+    public async Task<IEnumerable<string>> GetProjectUserEmailsByProjectId(int? id)
     {
-        return await _context.ProjectUsers.Where(u => u.ProjectId == id).ToListAsync();
+        var userEmails = await _context.ProjectUsers
+            .Where(u => u.ProjectId == id)
+            .Select(u => u.UserEmail) // Select only the UserEmail property
+            .Distinct() // Get distinct user emails
+            .ToListAsync();
+
+        return userEmails;
     }
 
-    public async Task<bool> IsUserAssignedToProject(int? projectId, string user)
+    public async Task<bool> IsUserAssignedToProject(int? projectId, string? user)
     {
         // Check if projectId has a value
         if (!projectId.HasValue)
