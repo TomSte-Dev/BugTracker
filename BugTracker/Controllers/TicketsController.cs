@@ -33,23 +33,25 @@ namespace BugTracker.Controllers
             }
 
             // Should check that current user is a project user.
-            if (!await _projectRepository.IsUserAssignedToProject(projectId, User.Identity.Name))
+            bool isUserAssigned = await _projectRepository.IsUserAssignedToProject(projectId, User.Identity.Name);
+            if (!isUserAssigned)
             {
                 return Unauthorized();
             }
 
             var project = await _projectRepository.GetProjectById(projectId);
-            if (project != null)
+            if (project == null)
             {
-                CurrentProjectSingleton.Instance.CurrentProject = project;
-
-                var tickets = _ticketRepository.AllTickets
-                    .Where(ticket => ticket.ProjectId == projectId)
-                    .OrderBy(ticket => ticket.DateCreated);
-
-                return View(tickets);
+                return NotFound();
             }
-            return NotFound();
+
+            CurrentProjectSingleton.Instance.CurrentProject = project;
+
+            var tickets = _ticketRepository.AllTickets
+                .Where(ticket => ticket.ProjectId == projectId)
+                .OrderBy(ticket => ticket.DateCreated);
+
+            return View(tickets);
         }
 
 
@@ -57,11 +59,15 @@ namespace BugTracker.Controllers
         public async Task<IActionResult> Create()
         {
             int projectId = CurrentProjectSingleton.Instance.CurrentProject.ProjectId;
+            var statuses = _ticketRepository.AllStatuses;
 
             var userEmails = await _projectRepository.GetProjectUserEmailsByProjectId(projectId); // Task<IEnumerable<string>>
 
             // Pass the list of user emails to the view
             ViewBag.UserEmails = new SelectList(userEmails);
+
+            // Pass the list of statuses to the view
+            ViewBag.Statuses = new SelectList(statuses, "StatusId", "Name");
 
 
 
@@ -78,7 +84,9 @@ namespace BugTracker.Controllers
             if (ModelState.IsValid)
             {
                 await _ticketRepository.AddTicket(ticket);
-                return RedirectToAction(nameof(Index));
+                // Redirect with the projectId
+                return RedirectToAction("Index", "Tickets", new { CurrentProjectSingleton.Instance.CurrentProject.ProjectId });
+
             }
             return View(ticket);
         }
@@ -96,6 +104,19 @@ namespace BugTracker.Controllers
             {
                 return NotFound();
             }
+
+            int projectId = CurrentProjectSingleton.Instance.CurrentProject.ProjectId;
+            var statuses = _ticketRepository.AllStatuses;
+
+            var userEmails = await _projectRepository.GetProjectUserEmailsByProjectId(projectId); // Task<IEnumerable<string>>
+
+            // Pass the list of user emails to the view
+            ViewBag.UserEmails = new SelectList(userEmails);
+
+            // Pass the list of statuses to the view
+            ViewBag.Statuses = new SelectList(statuses, "StatusId", "Name");
+
+
             return View(ticket);
         }
 
@@ -128,35 +149,36 @@ namespace BugTracker.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                // Redirect with the projectId
+                return RedirectToAction("Index", "Tickets", new { CurrentProjectSingleton.Instance.CurrentProject.ProjectId });
             }
             return View(ticket);
         }
 
-        // GET: Tickets/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+
+        // POST: Tickets/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int? id)
         {
+            // Validate Id
             if (id == null)
             {
                 return NotFound();
             }
 
+            // Validate ticket
             var ticket = await _ticketRepository.GetTicketById(id);
             if (ticket == null)
             {
                 return NotFound();
             }
 
-            return View(ticket);
-        }
 
-        // POST: Tickets/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
+
             await _ticketRepository.DeleteTicketById(id);
-            return RedirectToAction(nameof(Index));
+            // Redirect with the projectId
+            return RedirectToAction("Index", "Tickets", new { CurrentProjectSingleton.Instance.CurrentProject.ProjectId });
         }
 
         private bool TicketExists(int id)

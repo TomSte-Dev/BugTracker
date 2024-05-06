@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Create";
+    Layout = "_TicketLayout";
 }
 
 <h1>Create</h1>
@@ -14,13 +15,6 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <input type="hidden" asp-for="ProjectId" value="@CurrentProjectSingleton.Instance.CurrentProject.ProjectId" readonly />
-
-            <div class="form-group"
-
-                <label asp-for="ProjectId" class="control-label"></label>
-                <input asp-for="ProjectId" class="form-control" />
-                <span asp-validation-for="ProjectId" class="text-danger"></span>
-            </div>
 
             <div class="form-group">
                 <label asp-for="Title" class="control-label"></label>
@@ -35,7 +29,7 @@
 
             <div class="form-group">
                 <label asp-for="StatusId" class="control-label"></label>
-                <input asp-for="StatusId" class="form-control" />
+                <select asp-for="StatusId" class="form-control" asp-items="ViewBag.Statuses"></select>
                 <span asp-validation-for="StatusId" class="text-danger"></span>
             </div>
 
@@ -61,7 +55,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index" asp-route-projectId="@CurrentProjectSingleton.Instance.CurrentProject.ProjectId">Back to List</a>
 </div>
 
 @section Scripts {

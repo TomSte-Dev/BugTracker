@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Index";
+    Layout = "_TicketLayout";
 }
 
 <h1>Index</h1>
@@ -68,7 +69,6 @@
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.TicketId">Edit</a> 
-                <a asp-action="Delete" asp-route-id="@item.TicketId">Delete</a>
             </td>
         </tr>
 }

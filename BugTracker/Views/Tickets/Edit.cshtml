@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Edit";
+    Layout = "_TicketLayout";
 }
 
 <h1>Edit</h1>
@@ -13,11 +14,8 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="TicketId" />
-            <div class="form-group">
-                <label asp-for="ProjectId" class="control-label"></label>
-                <input asp-for="ProjectId" class="form-control" />
-                <span asp-validation-for="ProjectId" class="text-danger"></span>
-            </div>
+            <input type="hidden" asp-for="ProjectId" />
+
             <div class="form-group">
                 <label asp-for="Title" class="control-label"></label>
                 <input asp-for="Title" class="form-control" />
@@ -28,40 +26,65 @@
                 <input asp-for="Description" class="form-control" />
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="StatusId" class="control-label"></label>
-                <input asp-for="StatusId" class="form-control" />
+                <select asp-for="StatusId" class="form-control" asp-items="ViewBag.Statuses"></select>
                 <span asp-validation-for="StatusId" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="AssigneeEmail" class="control-label"></label>
-                <input asp-for="AssigneeEmail" class="form-control" />
+                <select asp-for="AssigneeEmail" class="form-control" asp-items="ViewBag.UserEmails"></select>
                 <span asp-validation-for="AssigneeEmail" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="ReporterEmail" class="control-label"></label>
-                <input asp-for="ReporterEmail" class="form-control" />
+                <select asp-for="ReporterEmail" class="form-control" asp-items="ViewBag.UserEmails"></select>
                 <span asp-validation-for="ReporterEmail" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="DateCreated" class="control-label"></label>
-                <input asp-for="DateCreated" class="form-control" />
-                <span asp-validation-for="DateCreated" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="LastUpdateTime" class="control-label"></label>
-                <input asp-for="LastUpdateTime" class="form-control" />
-                <span asp-validation-for="LastUpdateTime" class="text-danger"></span>
-            </div>
+
+            <input asp-for="DateCreated" type="hidden" />
+            <input asp-for="LastUpdateTime" type="hidden" value="@DateTime.Now" />
+
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+
+            <div class="form-group">
+                <a class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">
+                    Delete
+                </a>
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index" asp-route-projectId="@CurrentProjectSingleton.Instance.CurrentProject.ProjectId">Back to List</a>
+</div>
+
+<!-- Delete Modal-->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Are you sure?</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">Select "Delete" below to confirm.</div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                <form asp-controller="Tickets" asp-action="Delete" asp-route-id="@Model.TicketId" method="post">
+                    <input type="hidden" asp-for="TicketId" />
+                    <input type="submit" value="Delete" class="btn btn-danger" />
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section Scripts {

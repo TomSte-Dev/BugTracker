@@ -5,7 +5,7 @@ namespace BugTracker.Repositories;
 public interface ITicketRepository
 {
     IEnumerable<Ticket> AllTickets { get; }
-    
+    IEnumerable<Status> AllStatuses { get; }
 
     //CRUD
     Task AddTicket(Ticket ticket);

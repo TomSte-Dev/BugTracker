@@ -19,6 +19,11 @@ public class TicketRepository : ITicketRepository
         get { return _context.Tickets.ToList(); }
     }
 
+    public IEnumerable<Status> AllStatuses
+    {
+        get { return _context.Statuses.ToList();}
+    }
+
     public async Task AddTicket(Ticket ticket)
     {
         _context.Add(ticket);
