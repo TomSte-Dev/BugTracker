@@ -8,23 +8,43 @@ using Microsoft.EntityFrameworkCore;
 using BugTracker.Data;
 using BugTracker.Models;
 using BugTracker.Repositories;
+using BugTracker.Utility;
 
 namespace BugTracker.Controllers
 {
     public class TicketsController : Controller
     {
         private readonly ITicketRepository _ticketRepository;
+        private readonly IProjectRepository _projectRepository;
 
-        public TicketsController(ITicketRepository ticketRepository)
+        public TicketsController(ITicketRepository ticketRepository, IProjectRepository projectRepository)
         {
             _ticketRepository = ticketRepository;
+            _projectRepository = projectRepository;
         }
 
         // GET: Tickets
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? projectId)
         {
-            // Needs to be from the current selected project
-            return View(_ticketRepository.AllTickets);
+            await Console.Out.WriteLineAsync(projectId.ToString());
+            if (projectId == null)
+            {
+                return NotFound();
+            }
+
+            var project = await _projectRepository.GetProjectById(projectId);
+
+            if (project != null)
+            {
+                CurrentProjectSingleton.Instance.CurrentProject = project;
+
+                var tickets = _ticketRepository.AllTickets
+                    .Where(ticket => ticket.ProjectId == projectId)
+                    .OrderBy(ticket => ticket.DateCreated);
+
+                return View(tickets);
+            }
+            return NotFound();
         }
 
 

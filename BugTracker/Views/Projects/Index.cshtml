@@ -1,5 +1,4 @@
-﻿
-@model IEnumerable<BugTracker.Models.Project>
+﻿@model IEnumerable<BugTracker.Models.Project>
 
 @{
     ViewData["Title"] = "Projects";
@@ -38,6 +37,7 @@
                         <th>
                             @Html.DisplayNameFor(model => model.Description)
                         </th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -45,10 +45,14 @@
                     {
                         <tr>
                             <td>
-                                <a asp-controller="Tickets" asp-action="Index" asp-route-id="@item.ProjectId">@Html.DisplayFor(modelItem => item.Title)</a>
+                                <a asp-controller="Tickets" asp-action="Index" asp-route-projectId="@item.ProjectId">@Html.DisplayFor(modelItem => item.Title)</a>
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.Description)
+                            </td>
+                            <td>
+                                <a asp-controller="Projects" asp-action="Edit" asp-route-id="@item.ProjectId">Edit</a>
+                                <a asp-controller="Projects" asp-action="Delete" asp-route-id="@item.ProjectId">Delete</a>
                             </td>
                         </tr>
                     }

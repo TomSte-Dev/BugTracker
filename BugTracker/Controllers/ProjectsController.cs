@@ -56,14 +56,14 @@ namespace BugTracker.Controllers
         }
 
         // GET: Projects/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var project = _projectRepository.GetProjectById(id);
+            var project = await _projectRepository.GetProjectById(id);
             if (project == null)
             {
                 return NotFound();
@@ -113,7 +113,7 @@ namespace BugTracker.Controllers
                 return NotFound();
             }
 
-            var project = _projectRepository.GetProjectById(id);
+            var project = await _projectRepository.GetProjectById(id);
             if (project == null)
             {
                 return NotFound();

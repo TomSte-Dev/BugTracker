@@ -7,7 +7,7 @@ public class CurrentProjectSingleton
 {
     // The single instance of this class
     private static CurrentProjectSingleton _instance;
-    private static Project _currentProject;
+    private static Project? _currentProject;
 
 
     // Private constructor to prevent external instantiation
@@ -34,7 +34,7 @@ public class CurrentProjectSingleton
     }
 
     // Property to get or set the current selected project
-    public Project CurrentProject
+    public Project? CurrentProject
     {
         get { return _currentProject; }
         set { _currentProject = value; }
