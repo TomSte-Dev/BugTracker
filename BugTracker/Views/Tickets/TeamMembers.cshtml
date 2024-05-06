@@ -3,46 +3,68 @@
 @{
     ViewData["Title"] = "Team Members";
     Layout = "_TicketLayout";
+
+    var roles = ViewBag.Roles as List<Role>;
 }
 
-<h1>Team Members</h1>
+<div class="mx-5 my-3">
+    <h2>Team Members</h2>
+    <div class="pb-2">
+        <!-- Search -->
+        <form class="d-none d-inline-block form-inline mr-auto mw-100 navbar-search">
+            <div class="input-group">
+                <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
+                       aria-label="Search" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="button">
+                        <i class="fas fa-search fa-sm"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.ProjectId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UserEmail)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.RoleId)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ProjectId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UserEmail)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RoleId)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ProjectUserId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ProjectUserId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ProjectUserId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+        <!-- Create -->
+        <a asp-action="Create" class="btn btn-primary mr-auto mw-100" type="button">Add people</a>
+
+    </div>
+    <div class="card shadow mb-5">
+        <div class="table-responsive ">
+            <table class="table table-bordered m-0" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>
+                            User
+                        </th>
+                        <th>
+                            Role
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+            @foreach (var item in Model) {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.UserEmail)
+                        </td>
+                        <td>
+                            @{
+                                var role = roles.FirstOrDefault(r => r.RoleId == item.RoleId);
+                                if (role != null)
+                                {
+                                    @role.Title
+                                }
+                            }
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.ProjectUserId">Edit</a> |
+                            <a asp-action="Details" asp-route-id="@item.ProjectUserId">Details</a> |
+                            <a asp-action="Delete" asp-route-id="@item.ProjectUserId">Delete</a>
+                        </td>
+                    </tr>
+            }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

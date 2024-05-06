@@ -70,6 +70,11 @@ namespace BugTracker.Controllers
 
             var users = await _projectRepository.GetUsersByProjectId(projectId);
 
+            // Fetch roles from the database
+            var roles = _projectRepository.AllRoles;
+            // Pass roles to the ViewBag
+            ViewBag.Roles = roles;
+
             return View(users);
         }
 

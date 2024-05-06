@@ -7,6 +7,7 @@ public interface IProjectRepository
 {
 
     IEnumerable<Project> AllProjects { get; }
+    IEnumerable<Role> AllRoles { get; }
 
     //CRUD
     Task AddProject(Project project, string currentUser);
