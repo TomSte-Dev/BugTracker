@@ -5,7 +5,6 @@ namespace BugTracker.Repositories;
 
 public interface IProjectRepository
 {
-    public IEnumerable<ProjectUser> GetProjectUsersByProjectId(int? id);
 
     IEnumerable<Project> AllProjects { get; }
 
@@ -15,5 +14,10 @@ public interface IProjectRepository
     Task UpdateProject(Project project);
     Task DeleteProjectById(int? id);
 
+    // Project users
+    public Task<IEnumerable<ProjectUser>> GetProjectUsersByProjectId(int? id);
+    public Task<IEnumerable<Project>> GetProjectsByUser(string user);
+
+    public Task<bool> IsUserAssignedToProject(int? projectId, string user);
 
 }

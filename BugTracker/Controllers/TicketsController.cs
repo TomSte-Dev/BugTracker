@@ -26,13 +26,20 @@ namespace BugTracker.Controllers
         // GET: Tickets
         public async Task<IActionResult> Index(int? projectId)
         {
-            await Console.Out.WriteLineAsync(projectId.ToString());
             if (projectId == null)
             {
                 return NotFound();
             }
 
+            // Should check that current user is a project user.
+            if (await _projectRepository.IsUserAssignedToProject(projectId, User.Identity.Name))
+            {
+                return Unauthorized();
+            }
+
             var project = await _projectRepository.GetProjectById(projectId);
+            
+
 
             if (project != null)
             {

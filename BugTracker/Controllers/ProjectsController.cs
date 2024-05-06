@@ -29,7 +29,9 @@ namespace BugTracker.Controllers
         // GET: Projects
         public async Task<IActionResult> Index()
         {
-            return View(_projectRepository.AllProjects);
+            //Should only show projects this user has access to
+            var projects = await _projectRepository.GetProjectsByUser(User.Identity.Name);
+            return View(projects);
         }
 
 

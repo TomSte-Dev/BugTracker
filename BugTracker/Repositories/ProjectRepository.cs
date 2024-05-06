@@ -64,9 +64,37 @@ public class ProjectRepository : IProjectRepository
         await _context.SaveChangesAsync();
     }
 
-    public IEnumerable<ProjectUser> GetProjectUsersByProjectId(int? id)
+    public async Task<IEnumerable<ProjectUser>> GetProjectUsersByProjectId(int? id)
     {
-        return _context.ProjectUsers.Where(u => u.ProjectId == id).ToList();
+        return await _context.ProjectUsers.Where(u => u.ProjectId == id).ToListAsync();
     }
 
+    public async Task<bool> IsUserAssignedToProject(int? projectId, string user)
+    {
+        // Check if projectId has a value
+        if (!projectId.HasValue)
+        {
+            return false;
+        }
+
+        // Query to check if any project user matches the conditions
+        bool isAssigned = await _context.ProjectUsers
+            .AnyAsync(project => project.ProjectId == projectId && project.UserEmail == user);
+
+        return isAssigned;
+    }
+
+    public async Task<IEnumerable<Project>> GetProjectsByUser(string user)
+    {
+        var projectIds = await _context.ProjectUsers
+            .Where(pu => pu.UserEmail == user)
+            .Select(pu=>pu.ProjectId)
+            .ToListAsync();
+
+        var projects = await _context.Projects
+            .Where(p => projectIds.Contains(p.ProjectId)) // Filter projects based on projectIds
+            .ToListAsync();
+
+        return projects;
+    }
 }
