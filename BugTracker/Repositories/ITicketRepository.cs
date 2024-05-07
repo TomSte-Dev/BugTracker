@@ -13,4 +13,6 @@ public interface ITicketRepository
     Task UpdateTicket(Ticket ticket);
     Task DeleteTicketById(int? id);
 
+    // Add comments
+    Task AddCommentToTicket(Ticket ticket, Comment comment);
 }

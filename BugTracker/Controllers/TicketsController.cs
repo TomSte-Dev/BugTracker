@@ -142,15 +142,17 @@ namespace BugTracker.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("TicketId,ProjectId,Title,Description,StatusId,AssigneeEmail,ReporterEmail,DateCreated,LastUpdateTime")] Ticket ticket)
+        public async Task<IActionResult> Create([Bind("TicketId,ProjectId,Title,Description,StatusId,AssigneeEmail,ReporterEmail,DateCreated,LastUpdateTime,Comments")] Ticket ticket)
         {
             if (ModelState.IsValid)
             {
+                List<Comment> comment = new List<Comment>();
+                ticket.Comments = comment;
                 await _ticketRepository.AddTicket(ticket);
                 // Redirect with the projectId
                 return RedirectToAction("Index", "Tickets", new { CurrentProjectSingleton.Instance.CurrentProject.ProjectId });
 
-            }
+            } 
             return View(ticket);
         }
 
@@ -167,6 +169,7 @@ namespace BugTracker.Controllers
             {
                 return NotFound();
             }
+            ViewBag.TicketId = ticket.TicketId;
 
             int projectId = CurrentProjectSingleton.Instance.CurrentProject.ProjectId;
             var statuses = _ticketRepository.AllStatuses;
@@ -247,6 +250,24 @@ namespace BugTracker.Controllers
         private bool TicketExists(int id)
         {
             return _ticketRepository.AllTickets.Any(e => e.TicketId == id);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddComment(int? ticketId, [Bind("CommentId,TicketId,CommentText,CommentedBy,CommentDate")] Comment comment)
+        {
+
+            // Retrieve the ticket associated with the comment
+            Ticket ticket = await _ticketRepository.GetTicketById(ticketId);
+
+            if (ticket == null || comment == null)
+            {
+                return NotFound(); // Handle if ticket is not found
+            }
+
+            await _ticketRepository.AddCommentToTicket(ticket, comment);
+
+            // Redirect back to the ticket details page
+            return RedirectToAction("Edit", "Tickets", new { ticketId });
         }
     }
 }

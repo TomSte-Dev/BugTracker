@@ -6,10 +6,10 @@
 }
 
 <div class="mx-5 py-3">
-    <h2>Ticket details</h2>
+    <h2>@Model.Title</h2>
     <div class="card shadow p-3">
         <form asp-action="Edit">
-            <div class="row pb-2">
+            <div class="row">
                 <div class="col">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <input type="hidden" asp-for="TicketId" />
@@ -65,6 +65,21 @@
                 </div>
             </div>
         </form>
+@*         <!-- Add comment form -->
+        @{
+            // Create a new instance of ProjectUser for the form
+            var newComment = new BugTracker.Models.Comment();
+            await Html.PartialAsync("_AddComment", newComment);
+        }
+        <!-- Display a list of comments -->
+        @foreach (var comment in Model.Comments)
+        {
+            <div>
+                <p>@comment.CommentText</p>
+                <p>Commented by: @comment.CommentedBy</p>
+                <p>Comment date: @comment.CommentDate</p>
+            </div>
+        } *@
     </div>
 </div>
 

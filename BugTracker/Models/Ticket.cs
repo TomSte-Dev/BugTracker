@@ -12,4 +12,6 @@ public class Ticket
     //public string Priority { get; set; }
     public DateTime DateCreated { get; set; }
     public DateTime LastUpdateTime { get; set; }
+
+    public List<Comment> Comments { get; set; }
 }

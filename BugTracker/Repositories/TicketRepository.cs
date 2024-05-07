@@ -51,4 +51,13 @@ public class TicketRepository : ITicketRepository
         _context.Update(ticket);
         await _context.SaveChangesAsync();
     }
+
+    public async Task AddCommentToTicket(Ticket ticket, Comment comment)
+    {
+        // Add the new comment to the ticket's comments collection
+        ticket.Comments.Add(comment);
+
+        // Save changes to the database
+        await _context.SaveChangesAsync();
+    }
 }
