@@ -142,4 +142,18 @@ public class ProjectRepository : IProjectRepository
             await _context.SaveChangesAsync();
         }
     }
+
+    public async Task<string?> GetProjectUserRole(string userEmail, int? projectId)
+    {
+        // Find the ProjectUser record matching the userEmail and projectId
+        var projectUser = await _context.ProjectUsers
+            .FirstOrDefaultAsync(pu => pu.UserEmail == userEmail && pu.ProjectId == projectId);
+
+        var role = await _context.Roles.FirstOrDefaultAsync(r => r.RoleId == projectUser.RoleId);
+        if (role != null)
+        {
+            return role.Title;
+        }
+        return null;
+    }
 }

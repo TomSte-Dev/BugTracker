@@ -33,13 +33,6 @@ namespace BugTracker.Controllers
                 return NotFound();
             }
 
-            // Should check that current user is a project user.
-            bool isUserAssigned = await _projectRepository.IsUserAssignedToProject(projectId, User.Identity.Name);
-            if (!isUserAssigned)
-            {
-                return Unauthorized();
-            }
-
             var project = await _projectRepository.GetProjectById(projectId);
             if (project == null)
             {
@@ -47,6 +40,21 @@ namespace BugTracker.Controllers
             }
 
             CurrentProjectSingleton.Instance.CurrentProject = project;
+
+            // Should check that current user is a project user.
+            bool isUserAssigned = await _projectRepository.IsUserAssignedToProject(projectId, User.Identity.Name);
+            if (!isUserAssigned)
+            {
+                return Unauthorized();
+            } 
+            else
+            {
+                CurrentProjectSingleton.CurrentUserRole = await _projectRepository.GetProjectUserRole(
+                    User.Identity.Name,
+                    CurrentProjectSingleton.Instance.CurrentProject.ProjectId
+                    );
+            }
+
 
             var tickets = _ticketRepository.AllTickets
                 .Where(ticket => ticket.ProjectId == projectId)

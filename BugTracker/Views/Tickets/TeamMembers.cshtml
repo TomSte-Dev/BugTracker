@@ -63,7 +63,7 @@
                         </td>
                         <td>
                             @{
-                                if (User.Identity.Name != item.UserEmail)
+                                if (User.Identity.Name != item.UserEmail && CurrentProjectSingleton.CurrentUserRole == "Admin")
                                 {
                                         <div>
                                             <a class="btn btn-primary" data-toggle="modal" data-target="#editPeopleModal_@item.ProjectUserId">

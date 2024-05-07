@@ -28,4 +28,5 @@ public interface IProjectRepository
 
     public Task DeleteProjectUser(int? projectUserId);
 
+    public Task<string?> GetProjectUserRole(string userEmail, int? projectId);
 }
