@@ -34,9 +34,6 @@
                             Title
                         </th>
                         <th>
-                            Description
-                        </th>
-                        <th>
                             Status
                         </th>
                         <th>
@@ -51,7 +48,6 @@
                         <th>
                             Last Update Time
                         </th>
-                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -59,10 +55,7 @@
                     {
                         <tr>
                             <td>
-                                @Html.DisplayFor(modelItem => item.Title)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Description)
+                                <a asp-action="Edit" asp-route-id="@item.TicketId">@Html.DisplayFor(modelItem => item.Title)</a>
                             </td>
                             <td>
                                 @{
@@ -92,9 +85,6 @@
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.LastUpdateTime)
-                            </td>
-                            <td>
-                                <a asp-action="Edit" asp-route-id="@item.TicketId">Edit</a>
                             </td>
                         </tr>
                     }

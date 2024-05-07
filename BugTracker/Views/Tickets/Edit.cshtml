@@ -5,56 +5,63 @@
     Layout = "_TicketLayout";
 }
 
-<h1>Edit</h1>
-
-<h4>Ticket</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
+<div class="mx-5 py-3">
+    <h2>Project details</h2>
+    <div class="card shadow p-3">
         <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="TicketId" />
-            <input type="hidden" asp-for="ProjectId" />
+            <div class="row pb-2">
+                <div class="col">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="TicketId" />
+                    <input type="hidden" asp-for="ProjectId" />
 
-            <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
+                    <div class="form-group">
+                        <label asp-for="Title" class="control-label"></label>
+                        <input asp-for="Title" class="form-control" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Description" class="control-label"></label>
+                        <textarea asp-for="Description" class="form-control" style=" height:auto;"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
 
-            <div class="form-group">
-                <label asp-for="StatusId" class="control-label"></label>
-                <select asp-for="StatusId" class="form-control" asp-items="ViewBag.Statuses"></select>
-                <span asp-validation-for="StatusId" class="text-danger"></span>
-            </div>
+                    <div class="form-group">
+                        <input type="submit" value="Save" class="btn btn-primary" />
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <div class="form-group">
+                        <label asp-for="StatusId" class="control-label"></label>
+                        <select asp-for="StatusId" class="form-control" asp-items="ViewBag.Statuses"></select>
+                        <span asp-validation-for="StatusId" class="text-danger"></span>
+                    </div>
 
-            <div class="form-group">
-                <label asp-for="AssigneeEmail" class="control-label"></label>
-                <select asp-for="AssigneeEmail" class="form-control" asp-items="ViewBag.UserEmails"></select>
-                <span asp-validation-for="AssigneeEmail" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ReporterEmail" class="control-label"></label>
-                <select asp-for="ReporterEmail" class="form-control" asp-items="ViewBag.UserEmails"></select>
-                <span asp-validation-for="ReporterEmail" class="text-danger"></span>
-            </div>
+                    <div class="form-group">
+                        <label asp-for="AssigneeEmail" class="control-label"></label>
+                        <select asp-for="AssigneeEmail" class="form-control" asp-items="ViewBag.UserEmails"></select>
+                        <span asp-validation-for="AssigneeEmail" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="ReporterEmail" class="control-label"></label>
+                        <select asp-for="ReporterEmail" class="form-control" asp-items="ViewBag.UserEmails"></select>
+                        <span asp-validation-for="ReporterEmail" class="text-danger"></span>
+                    </div>
 
-            <input asp-for="DateCreated" type="hidden" />
-            <input asp-for="LastUpdateTime" type="hidden" value="@DateTime.Now" />
-
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-
-            <div class="form-group">
-                <a class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">
-                    Delete
-                </a>
+                    <div class="form-group">
+                        <span>Date created: @Model.DateCreated</span>
+                        <input asp-for="DateCreated" type="hidden" />
+                    </div>
+                    <div class="form-group">
+                        <span>Last updated: @Model.LastUpdateTime</span>
+                        <input asp-for="LastUpdateTime" type="hidden" value="@DateTime.Now" />
+                    </div>
+                    <div class="form-group">
+                        <a class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">
+                            Delete
+                        </a>
+                    </div>
+                </div>
             </div>
         </form>
     </div>
