@@ -57,6 +57,7 @@
                         <span>Last updated: @Model.LastUpdateTime.ToString("dd' 'MMMM' 'yyyy' 'HH:mm:ss")</span>
                         <input asp-for="LastUpdateTime" type="hidden" value="@DateTime.Now" />
                     </div>
+                    <input asp-for="Comments" type="hidden" value=@Model.Comments />
                     <div class="form-group">
                         <a class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">
                             Delete
@@ -65,21 +66,37 @@
                 </div>
             </div>
         </form>
-@*         <!-- Add comment form -->
-        @{
-            // Create a new instance of ProjectUser for the form
-            var newComment = new BugTracker.Models.Comment();
-            await Html.PartialAsync("_AddComment", newComment);
-        }
-        <!-- Display a list of comments -->
-        @foreach (var comment in Model.Comments)
-        {
-            <div>
-                <p>@comment.CommentText</p>
-                <p>Commented by: @comment.CommentedBy</p>
-                <p>Comment date: @comment.CommentDate</p>
+
+        <div class="card p-3">
+            <div class="control-label">
+                Comments
             </div>
-        } *@
+            <!-- Add comment form -->
+            @{
+                // Create a new instance of Comment for the form
+                var newComment = new BugTracker.Models.Comment();
+                await Html.RenderPartialAsync("_AddComment", newComment);
+            }
+
+            <!-- Display a list of comments -->
+            @if (Model.Comments != null)
+            {
+                var reversedComments = new List<BugTracker.Models.Comment>(Model.Comments);
+                reversedComments.Reverse();
+                @foreach (var comment in reversedComments)
+                {
+                    <div class="card p-3 mb-1">
+                        <div class="font-weight-bold">
+                            <div class="text-truncate">
+                                @comment.CommentText
+                            </div>
+                            <div class="small text-gray-500">@comment.CommentedBy · @comment.CommentDate</div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+
     </div>
 </div>
 

@@ -1,17 +1,16 @@
 ﻿@model BugTracker.Models.Comment
 
-<form asp-controller="Tickets" asp-action="AddComment" asp-route-ticketId="ViewBag.TicketId" method="post">
+<form asp-controller="Tickets" asp-action="AddComment" asp-route-ticketId="@ViewBag.TicketId" method="post">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <input type="hidden" asp-for="TicketId" value="ViewBag.TicketId" readonly />
+    <input type="hidden" asp-for="TicketId" value="@ViewBag.TicketId" readonly />
     <div class="form-group">
-        <label asp-for="CommentText" class="control-label">Add a comment...</label>
-        <textarea asp-for="CommentText" class="form-control" style=" height:100px;"></textarea>
+        <textarea asp-for="CommentText" placeholder="Add a comment..." class="form-control" style=" height:100px;"></textarea>
         <span asp-validation-for="CommentText" class="text-danger"></span>
     </div>
     <input type="hidden" asp-for="CommentedBy" value="@User.Identity.Name" readonly />
     <input type="hidden" asp-for="CommentDate" value="@DateTime.Now" readonly />
     <div class="form-group">
-        <input type="submit" value="Create" class="btn btn-primary" />
+        <input type="submit" value="Submit Comment" class="btn btn-primary" />
     </div>
 </form>
 

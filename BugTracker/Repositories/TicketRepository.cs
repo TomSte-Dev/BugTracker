@@ -43,7 +43,9 @@ public class TicketRepository : ITicketRepository
 
     public async Task<Ticket?> GetTicketById(int? id)
     {
-        return await _context.Tickets.FindAsync(id);
+        return await _context.Tickets
+            .Include(t => t.Comments)
+            .FirstOrDefaultAsync(t => t.TicketId == id);
     }
 
     public async Task UpdateTicket(Ticket ticket)
@@ -55,6 +57,11 @@ public class TicketRepository : ITicketRepository
     public async Task AddCommentToTicket(Ticket ticket, Comment comment)
     {
         // Add the new comment to the ticket's comments collection
+        if(ticket.Comments == null)
+        {
+            List<Comment> newComments = new List<Comment>();
+            ticket.Comments = newComments;
+        }
         ticket.Comments.Add(comment);
 
         // Save changes to the database

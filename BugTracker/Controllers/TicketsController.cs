@@ -191,7 +191,7 @@ namespace BugTracker.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("TicketId,ProjectId,Title,Description,StatusId,AssigneeEmail,ReporterEmail,DateCreated,LastUpdateTime")] Ticket ticket)
+        public async Task<IActionResult> Edit(int id, [Bind("TicketId,ProjectId,Title,Description,StatusId,AssigneeEmail,ReporterEmail,DateCreated,LastUpdateTime,Comments")] Ticket ticket)
         {
             if (id != ticket.TicketId)
             {
@@ -216,7 +216,7 @@ namespace BugTracker.Controllers
                     }
                 }
                 // Redirect with the projectId
-                return RedirectToAction("Index", "Tickets", new { CurrentProjectSingleton.Instance.CurrentProject.ProjectId });
+                return RedirectToAction("Edit", "Tickets", new { id });
             }
             return View(ticket);
         }
@@ -259,7 +259,7 @@ namespace BugTracker.Controllers
             // Retrieve the ticket associated with the comment
             Ticket ticket = await _ticketRepository.GetTicketById(ticketId);
 
-            if (ticket == null || comment == null)
+            if (ticket == null)
             {
                 return NotFound(); // Handle if ticket is not found
             }
@@ -267,7 +267,7 @@ namespace BugTracker.Controllers
             await _ticketRepository.AddCommentToTicket(ticket, comment);
 
             // Redirect back to the ticket details page
-            return RedirectToAction("Edit", "Tickets", new { ticketId });
+            return RedirectToAction("Edit", "Tickets", new { Id = ticketId });
         }
     }
 }
