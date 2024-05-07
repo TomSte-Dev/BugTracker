@@ -181,29 +181,33 @@
 
                     <!-- Divider -->
                     <hr class="sidebar-divider">
+                    @{
+                        if (CurrentProjectSingleton.CurrentUserRole == "Admin")
+                        {
+                            <!-- Heading -->
+                            <div class="sidebar-heading">
+                                Admin
+                            </div>
 
-                    <!-- Heading -->
-                    <div class="sidebar-heading">
-                        Admin
-                    </div>
+                            <!-- Nav Item - Pages Collapse Menu -->
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Tickets" asp-action="TeamMembers" asp-route-projectId="@CurrentProjectSingleton.Instance.CurrentProject.ProjectId">
+                                    <i class="fas fa-user-plus"></i>
+                                    <span>Manage Team</span>
+                                </a>
+                            </li>
 
-                    <!-- Nav Item - Pages Collapse Menu -->
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Tickets" asp-action="TeamMembers" asp-route-projectId="@CurrentProjectSingleton.Instance.CurrentProject.ProjectId">
-                            <i class="fas fa-user-plus"></i>
-                            <span>Manage Team</span>
-                        </a>
-                    </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Projects" asp-action="Edit" asp-route-Id="@CurrentProjectSingleton.Instance.CurrentProject.ProjectId">
+                                    <i class="fas fa-fw fa-cog"></i>
+                                    <span>Project Settings</span>
+                                </a>
+                            </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Projects" asp-action="Edit" asp-route-Id="@CurrentProjectSingleton.Instance.CurrentProject.ProjectId">
-                            <i class="fas fa-fw fa-cog"></i>
-                            <span>Project Settings</span>
-                        </a>
-                    </li>
-
-                    <!-- Divider -->
-                    <hr class="sidebar-divider d-none d-md-block">
+                            <!-- Divider -->
+                            <hr class="sidebar-divider d-none d-md-block">
+                        }
+                    }
 
                     <!-- Sidebar Toggler (Sidebar) -->
                     <div class="text-center d-none d-md-inline">
