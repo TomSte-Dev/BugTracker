@@ -76,7 +76,7 @@ namespace BugTracker.Controllers
 
             // Should check that current user is a project user.
             bool isUserAssigned = await _projectRepository.IsUserAssignedToProject(projectId, User.Identity.Name);
-            if (!isUserAssigned)
+            if (!isUserAssigned || CurrentProjectSingleton.CurrentUserRole != "Admin")
             {
                 return Unauthorized();
             }
@@ -96,6 +96,11 @@ namespace BugTracker.Controllers
 
         public async Task<IActionResult> AddPeople([Bind("ProjectId,UserEmail,RoleId")] ProjectUser projectUser)
         {
+            if(CurrentProjectSingleton.CurrentUserRole != "Admin")
+            {
+                return Unauthorized();
+            }
+
             if (ModelState.IsValid)
             {
                 // Check that user doesn't currently exist
@@ -115,10 +120,11 @@ namespace BugTracker.Controllers
         // GET: Tickets/Create
         public async Task<IActionResult> Create()
         {
+
             int projectId = CurrentProjectSingleton.Instance.CurrentProject.ProjectId;
             var statuses = _ticketRepository.AllStatuses;
 
-            var userEmails = await _projectRepository.GetUserEmailsByProjectId(projectId); // Task<IEnumerable<string>>
+            var userEmails = await _projectRepository.GetUserEmailsByProjectId(projectId);
 
             // Pass the list of user emails to the view
             ViewBag.UserEmails = new SelectList(userEmails);

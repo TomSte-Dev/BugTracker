@@ -17,6 +17,7 @@ public class CurrentProjectSingleton
         // Default value for the project
         // Set on first instantion
         _currentProject = null;
+        _currentUserRole = null;
     }
 
     // Property to access the singleton instance
