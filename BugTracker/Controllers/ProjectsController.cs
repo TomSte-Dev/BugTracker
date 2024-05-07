@@ -136,7 +136,33 @@ namespace BugTracker.Controllers
         #endregion
 
         #region Project Dashboard
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditTeamMember(int? id, [Bind("ProjectUserId,ProjectId,UserEmail,RoleId")] ProjectUser projectUser)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
+            await _projectRepository.UpdateProjectUser(projectUser);
+
+            return RedirectToAction("TeamMembers", "Tickets", new { CurrentProjectSingleton.Instance.CurrentProject.ProjectId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RemoveTeamMember(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            await _projectRepository.DeleteProjectUser(id);
+
+            return RedirectToAction("TeamMembers", "Tickets", new { CurrentProjectSingleton.Instance.CurrentProject.ProjectId });
+        }
 
         #endregion
     }

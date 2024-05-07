@@ -58,7 +58,7 @@ public class ProjectRepository : IProjectRepository
 
     public async Task DeleteProjectById(int? id)
     {
-        var project = _context.Projects.Find(id);
+        var project = await _context.Projects.FindAsync(id);
         if (project != null)
         {
             var users = _context.ProjectUsers.Where(p => p.ProjectId == id).ToList();
@@ -123,5 +123,23 @@ public class ProjectRepository : IProjectRepository
         await _context.ProjectUsers.AddAsync(projectUser);
         await _context.SaveChangesAsync();
 
+    }
+
+    public async Task UpdateProjectUser(ProjectUser projectUser)
+    {
+        _context.ProjectUsers.Update(projectUser);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task DeleteProjectUser(int? projectUserId)
+    {
+        var user = await _context.ProjectUsers.FindAsync(projectUserId);
+        if (user != null)
+        {
+            // Remove user from project users
+            // Keeps any tickets they have made or used 
+            _context.ProjectUsers.Remove(user);
+            await _context.SaveChangesAsync();
+        }
     }
 }

@@ -24,4 +24,8 @@ public interface IProjectRepository
 
     public Task AddProjectUser(ProjectUser projectUser);
 
+    public Task UpdateProjectUser(ProjectUser projectUser);
+
+    public Task DeleteProjectUser(int? projectUserId);
+
 }

@@ -5,6 +5,7 @@
     Layout = "_TicketLayout";
 
     var roles = ViewBag.Roles as List<Role>;
+    ProjectUser? selectedUser = null;
 }
 
 <div class="mx-5 my-3">
@@ -61,16 +62,34 @@
                             }
                         </td>
                         <td>
-                                @{
-                                    if(User.Identity.Name != item.UserEmail)
-                                    {
+                            @{
+                                if (User.Identity.Name != item.UserEmail)
+                                {
                                         <div>
-                                            <a class="btn btn-primary" data-toggle="modal" data-target="#editPeopleModal">
+                                            <a class="btn btn-primary" data-toggle="modal" data-target="#editPeopleModal_@item.ProjectUserId">
                                                 Edit
                                             </a>
+                                            <div class="modal fade" id="editPeopleModal_@item.ProjectUserId" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                                aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLabel">Edit user</h5>
+                                                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">×</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <!-- Edit User Form -->
+                                                            @await Html.PartialAsync("_EditPeoplePartial", item)
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                         </div>
-                                    }
                                 }
+                            }
                         </td>
                     </tr>
             }
@@ -103,20 +122,3 @@
     </div>
 </div>
 
-<!-- Edit People Modal-->
-<div class="modal fade" id="editPeopleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Edit</h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="modal-body">
-
-            </div>
-        </div>
-    </div>
-</div>
