@@ -52,6 +52,10 @@ namespace BugTracker.Controllers
                 .Where(ticket => ticket.ProjectId == projectId)
                 .OrderBy(ticket => ticket.DateCreated);
 
+
+            var statuses = _ticketRepository.AllStatuses.ToDictionary(status => status.StatusId, status => status.Name);
+            ViewBag.StatusesDictionary = statuses;
+
             return View(tickets);
         }
 

@@ -31,25 +31,25 @@
                 <thead>
                     <tr>
                         <th>
-                            @Html.DisplayNameFor(model => model.Title)
+                            Title
                         </th>
                         <th>
-                            @Html.DisplayNameFor(model => model.Description)
+                            Description
                         </th>
                         <th>
-                            @Html.DisplayNameFor(model => model.StatusId)
+                            Status
                         </th>
                         <th>
-                            @Html.DisplayNameFor(model => model.AssigneeEmail)
+                            Assignee
                         </th>
                         <th>
-                            @Html.DisplayNameFor(model => model.ReporterEmail)
+                            Reporter
                         </th>
                         <th>
-                            @Html.DisplayNameFor(model => model.DateCreated)
+                            Date Created
                         </th>
                         <th>
-                            @Html.DisplayNameFor(model => model.LastUpdateTime)
+                            Last Update Time
                         </th>
                         <th></th>
                     </tr>
@@ -65,7 +65,21 @@
                                 @Html.DisplayFor(modelItem => item.Description)
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.StatusId)
+                                @{
+                                    var statusesDictionary = ViewBag.StatusesDictionary as Dictionary<int, string>;
+                                    var statusId = item.StatusId; // Assuming item is your current model item
+
+                                    // Check if the status ID exists in the dictionary
+                                    if (statusesDictionary.ContainsKey(statusId))
+                                    {
+                                        // Display the title of the corresponding status
+                                        @statusesDictionary[statusId]
+                                    } else
+                                    {
+                                        // Handle case where corresponding status is not found
+                                        @("Status Not Found")
+                                    }
+                                }
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.AssigneeEmail)
