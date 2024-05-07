@@ -61,6 +61,11 @@ namespace BugTracker.Controllers
         // GET: Projects/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            if (CurrentProjectSingleton.CurrentUserRole != "Admin")
+            {
+                return Unauthorized();
+            }
+
             if (id == null)
             {
                 return NotFound();
@@ -81,6 +86,11 @@ namespace BugTracker.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ProjectId,Title,Description")] Project project)
         {
+            if (CurrentProjectSingleton.CurrentUserRole != "Admin")
+            {
+                return Unauthorized();
+            }
+
             if (id != project.ProjectId)
             {
                 return NotFound();
@@ -113,6 +123,11 @@ namespace BugTracker.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int? id)
         {
+            if (CurrentProjectSingleton.CurrentUserRole != "Admin")
+            {
+                return Unauthorized();
+            }
+
             if (id == null)
             {
                 return NotFound();
@@ -140,6 +155,11 @@ namespace BugTracker.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditTeamMember(int? id, [Bind("ProjectUserId,ProjectId,UserEmail,RoleId")] ProjectUser projectUser)
         {
+            if (CurrentProjectSingleton.CurrentUserRole != "Admin")
+            {
+                return Unauthorized();
+            }
+
             if (id == null)
             {
                 return NotFound();
@@ -154,6 +174,11 @@ namespace BugTracker.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RemoveTeamMember(int? id)
         {
+            if (CurrentProjectSingleton.CurrentUserRole != "Admin")
+            {
+                return Unauthorized();
+            }
+
             if (id == null)
             {
                 return NotFound();
