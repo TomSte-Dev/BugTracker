@@ -66,7 +66,6 @@ namespace BugTracker
             app.MapRazorPages();
 
             // Seed initial data for appointments and users into the database.
-
             // Only if the databases are empty
             DbInitializer.Seed(app);
 

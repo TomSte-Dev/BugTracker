@@ -113,6 +113,7 @@ public class ProjectRepository : IProjectRepository
     {
         var users = await _context.ProjectUsers
             .Where(u => u.ProjectId == id)
+            .OrderBy(u => u.UserEmail)
             .ToListAsync();
 
         return users;
