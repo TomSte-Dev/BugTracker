@@ -5,28 +5,56 @@ namespace BugTracker.Repositories;
 
 public interface IProjectRepository
 {
+    #region Properties
 
+    // Get all projects from the repository.
     IEnumerable<Project> AllProjects { get; }
+
+    // Get all roles from the repository.
     IEnumerable<Role> AllRoles { get; }
 
-    //CRUD
+    #endregion
+
+    #region CRUD Operations
+
+    // Add a new project to the repository.
     Task AddProject(Project project, string currentUser);
+
+    // Retrieve a project by its ID from the repository.
     Task<Project?> GetProjectById(int? id);
+
+    // Update an existing project in the repository.
     Task UpdateProject(Project project);
+
+    // Delete a project by its ID from the repository.
     Task DeleteProjectById(int? id);
 
-    // Project users
-    public Task<IEnumerable<string>> GetUserEmailsByProjectId(int? id);
-    public Task<IEnumerable<ProjectUser>> GetUsersByProjectId(int? id);
-    public Task<IEnumerable<Project>> GetProjectsByUser(string user);
+    #endregion
 
-    public Task<bool> IsUserAssignedToProject(int? projectId, string? user);
+    #region Project users
 
-    public Task AddProjectUser(ProjectUser projectUser);
+    // Retrieve user emails associated with a project by its ID.
+    Task<IEnumerable<string>> GetUserEmailsByProjectId(int? id);
 
-    public Task UpdateProjectUser(ProjectUser projectUser);
+    // Retrieve users associated with a project by its ID.
+    Task<IEnumerable<ProjectUser>> GetUsersByProjectId(int? id);
 
-    public Task DeleteProjectUser(int? projectUserId);
+    // Retrieve projects associated with a user.
+    Task<IEnumerable<Project>> GetProjectsByUser(string user);
 
-    public Task<string?> GetProjectUserRole(string userEmail, int? projectId);
+    // Check if a user is assigned to a project.
+    Task<bool> IsUserAssignedToProject(int? projectId, string? user);
+
+    // Add a user to a project.
+    Task AddProjectUser(ProjectUser projectUser);
+
+    // Update a user's association with a project.
+    Task UpdateProjectUser(ProjectUser projectUser);
+
+    // Delete a user's association with a project by the user's ID.
+    Task DeleteProjectUser(int? projectUserId);
+
+    // Retrieve the role of a user in a project by user email and project ID.
+    Task<string?> GetProjectUserRole(string userEmail, int? projectId);
+    #endregion
 }
