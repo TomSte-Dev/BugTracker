@@ -8,26 +8,27 @@ using System.Reflection.Emit;
 
 namespace BugTracker.Data;
 
+// Represents the database context for the BugTracker application
 public class BugTrackerDbContext : IdentityDbContext<BugTrackerUser>
 {
+    // Constructor to initialize the database context
     public BugTrackerDbContext(DbContextOptions<BugTrackerDbContext> options)
         : base(options)
     {
     }
 
+    // DbSet properties for entity types representing database tables
     public DbSet<Project> Projects { get; set; }
     public DbSet<Ticket> Tickets { get; set; }
     public DbSet<ProjectUser> ProjectUsers { get; set; }
     public DbSet<Role> Roles { get; set; }
     public DbSet<Status> Statuses { get; set; }
+    public DbSet<Comment> Comment { get; set; }
 
+    // Override the OnModelCreating method to configure the model
+    // Nothing additional is added here currently just the base implementation
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        // Customize the ASP.NET Identity model and override the defaults if needed.
-        // For example, you can rename the ASP.NET Identity table names and more.
-        // Add your customizations after calling base.OnModelCreating(builder);
     }
-
-public DbSet<BugTracker.Models.Comment> Comment { get; set; } = default!;
 }
