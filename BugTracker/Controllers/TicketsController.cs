@@ -69,7 +69,7 @@ namespace BugTracker.Controllers
 
 
         // GET: Tickets/Create
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> CreateTicket()
         {
 
             int projectId = CurrentProjectSingleton.Instance.CurrentProject.ProjectId;
@@ -93,7 +93,7 @@ namespace BugTracker.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("TicketId,ProjectId,Title,Description,StatusId,AssigneeEmail,ReporterEmail,DateCreated,LastUpdateTime,Comments")] Ticket ticket)
+        public async Task<IActionResult> CreateTicket([Bind("TicketId,ProjectId,Title,Description,StatusId,AssigneeEmail,ReporterEmail,DateCreated,LastUpdateTime,Comments")] Ticket ticket)
         {
             if (ModelState.IsValid)
             {
@@ -107,8 +107,8 @@ namespace BugTracker.Controllers
             return View(ticket);
         }
 
-        // GET: Tickets/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        // GET: Tickets/EditTicket/5
+        public async Task<IActionResult> EditTicket(int? id)
         {
             if (id == null)
             {
@@ -137,12 +137,12 @@ namespace BugTracker.Controllers
             return View(ticket);
         }
 
-        // POST: Tickets/Edit/5
+        // POST: Tickets/EditTicket/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("TicketId,ProjectId,Title,Description,StatusId,AssigneeEmail,ReporterEmail,DateCreated,LastUpdateTime,Comments")] Ticket ticket)
+        public async Task<IActionResult> EditTicket(int id, [Bind("TicketId,ProjectId,Title,Description,StatusId,AssigneeEmail,ReporterEmail,DateCreated,LastUpdateTime,Comments")] Ticket ticket)
         {
             if (id != ticket.TicketId)
             {
@@ -167,14 +167,14 @@ namespace BugTracker.Controllers
                     }
                 }
                 // Redirect with the projectId
-                return RedirectToAction("Edit", "Tickets", new { id });
+                return RedirectToAction("EditTicket", "Tickets", new { id });
             }
             return View(ticket);
         }
 
 
         // POST: Tickets/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost, ActionName("DeleteTicket")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int? id)
         {
@@ -218,7 +218,7 @@ namespace BugTracker.Controllers
             await _ticketRepository.AddCommentToTicket(ticket, comment);
 
             // Redirect back to the ticket details page
-            return RedirectToAction("Edit", "Tickets", new { Id = ticketId });
+            return RedirectToAction("EditTicket", "Tickets", new { Id = ticketId });
         }
     }
 }

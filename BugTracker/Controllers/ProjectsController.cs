@@ -37,7 +37,7 @@ namespace BugTracker.Controllers
 
 
         // GET: Projects/Create
-        public IActionResult Create()
+        public IActionResult CreateProject()
         {
             return View();
         }
@@ -47,7 +47,7 @@ namespace BugTracker.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProjectId,Title,Description")] Project project)
+        public async Task<IActionResult> CreateProject([Bind("ProjectId,Title,Description")] Project project)
         {
             if (ModelState.IsValid)
             {
@@ -59,7 +59,7 @@ namespace BugTracker.Controllers
         }
 
         // GET: Projects/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> EditProject(int? id)
         {
             if (CurrentProjectSingleton.CurrentUserRole != "Admin")
             {
@@ -84,7 +84,7 @@ namespace BugTracker.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProjectId,Title,Description")] Project project)
+        public async Task<IActionResult> EditProject(int id, [Bind("ProjectId,Title,Description")] Project project)
         {
             if (CurrentProjectSingleton.CurrentUserRole != "Admin")
             {
@@ -119,7 +119,7 @@ namespace BugTracker.Controllers
         }
 
         // POST: Projects/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost, ActionName("DeleteProject")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int? id)
         {

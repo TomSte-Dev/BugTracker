@@ -8,7 +8,7 @@
 <div class="mx-5 py-3">
     <h2>@Model.Title</h2>
     <div class="card shadow p-3">
-        <form asp-action="Edit">
+        <form asp-controller="Tickets" asp-action="EditTicket">
             <div class="row">
                 <div class="col">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -114,7 +114,7 @@
             <div class="modal-body">Select "Delete" below to confirm.</div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                <form asp-controller="Tickets" asp-action="Delete" asp-route-id="@Model.TicketId" method="post">
+                <form asp-controller="Tickets" asp-action="DeleteTicket" asp-route-id="@Model.TicketId" method="post">
                     <input type="hidden" asp-for="TicketId" />
                     <input type="submit" value="Delete" class="btn btn-danger" />
                 </form>

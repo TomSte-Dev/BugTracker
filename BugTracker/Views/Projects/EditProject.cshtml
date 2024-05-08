@@ -9,7 +9,7 @@
     <h2>Project details</h2>
     <div class="row pb-2">
         <div class="card shadow col-auto pt-3">
-            <form asp-action="Edit">
+            <form asp-controller="Projects" asp-action="EditProject">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <input type="hidden" asp-for="ProjectId" />
                 <div class="form-group">
@@ -47,7 +47,7 @@
             <div class="modal-body">Select "Delete" below to confirm.</div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                <form asp-controller="Projects" asp-action="Delete" asp-route-id="@Model.ProjectId" method="post">
+                <form asp-controller="Projects" asp-action="DeleteProject" asp-route-id="@Model.ProjectId" method="post">
                     <input type="hidden" asp-for="ProjectId" />
                     <input type="submit" value="Delete" class="btn btn-danger" />
                 </form>

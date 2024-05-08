@@ -12,17 +12,17 @@
     <h2>Team Members</h2>
     <div class="pb-2">
         <!-- Search -->
-        <form class="d-none d-inline-block form-inline mr-auto mw-100 navbar-search">
+        <div class="d-inline-block form-inline mr-auto mw-100 navbar-search">
             <div class="input-group">
                 <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
-                       aria-label="Search" aria-describedby="basic-addon2">
+                       aria-label="Search" aria-describedby="basic-addon2" id="searchInput">
                 <div class="input-group-append">
-                    <button class="btn btn-primary" type="button">
+                    <button class="btn btn-primary" type="button" id="searchButton">
                         <i class="fas fa-search fa-sm"></i>
                     </button>
                 </div>
             </div>
-        </form>
+        </div>
 
         <!-- Create -->
         <a class="btn btn-primary" data-toggle="modal" data-target="#addPeopleModal">
@@ -122,3 +122,29 @@
     </div>
 </div>
 
+
+<script>
+    document.getElementById('searchButton').addEventListener('click', function () {
+        performSearch();
+    });
+
+    document.getElementById('searchInput').addEventListener('input', function () {
+        performSearch();
+    });
+
+    function performSearch() {
+        var searchText = document.getElementById('searchInput').value.toLowerCase();
+        var rows = document.getElementById('dataTable').getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+        for (var i = 0; i < rows.length; i++) {
+            var user = rows[i].getElementsByTagName('td')[0].textContent.toLowerCase();
+            var role = rows[i].getElementsByTagName('td')[1].textContent.toLowerCase();
+
+            if (user.includes(searchText) || role.includes(searchText)) {
+                rows[i].style.display = "";
+            } else {
+                rows[i].style.display = "none";
+            }
+        }
+    }
+</script>

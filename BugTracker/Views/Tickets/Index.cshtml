@@ -22,7 +22,7 @@
         </div>
 
         <!-- Create -->
-        <a asp-action="Create" class="btn btn-primary mr-auto mw-100" type="button">Create New</a>
+        <a asp-controller="Tickets" asp-action="CreateTicket" class="btn btn-primary mr-auto mw-100" type="button">Create New</a>
 
     </div>
     <!-- Results -->
@@ -43,7 +43,7 @@
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td><a asp-action="Edit" asp-route-id="@item.TicketId">@Html.DisplayFor(modelItem => item.Title)</a></td>
+                            <td><a asp-controller="Tickets" asp-action="EditTicket" asp-route-id="@item.TicketId">@Html.DisplayFor(modelItem => item.Title)</a></td>
                             <td>
                                 @{
                                     var statusesDictionary = ViewBag.StatusesDictionary as Dictionary<int, string>;

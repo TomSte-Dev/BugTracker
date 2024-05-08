@@ -50,7 +50,7 @@
                     View all projects
                 </a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" asp-controller="Projects" asp-action="Create" title="Create project">
+                <a class="dropdown-item" asp-controller="Projects" asp-action="CreateProject" title="Create project">
                     Create project
                 </a>
             </div>
@@ -136,7 +136,7 @@
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Projects" asp-action="Edit" asp-route-Id="@CurrentProjectSingleton.Instance.CurrentProject.ProjectId">
+                                <a class="nav-link" asp-controller="Projects" asp-action="EditProject" asp-route-Id="@CurrentProjectSingleton.Instance.CurrentProject.ProjectId">
                                     <i class="fas fa-fw fa-cog"></i>
                                     <span>Project Settings</span>
                                 </a>

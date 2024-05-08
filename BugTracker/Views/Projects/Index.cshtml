@@ -8,7 +8,7 @@
     <h2>@ViewData["Title"]</h2>
     <div class="pb-2">
         <!-- Search -->
-        <form class="d-none d-inline-block form-inline mr-auto mw-100 navbar-search">
+        <div class="d-none d-inline-block form-inline mr-auto mw-100 navbar-search">
             <div class="input-group">
                 <input id="searchInput" type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
                        aria-label="Search" aria-describedby="basic-addon2">
@@ -18,10 +18,10 @@
                     </button>
                 </div>
             </div>
-        </form>
+        </div>
 
         <!-- Create -->
-        <a asp-action="Create" class="btn btn-primary mr-auto mw-100" type="button">Create New</a>
+        <a asp-controller="Projects" asp-action="CreateProject" class="btn btn-primary mr-auto mw-100" type="button">Create New</a>
 
     </div>
 

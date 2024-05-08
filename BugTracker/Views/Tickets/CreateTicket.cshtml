@@ -8,7 +8,7 @@
     <h2>Create ticket</h2>
     <div class="row pb-2">
         <div class="card shadow col-6 pt-3">
-            <form asp-action="Create">
+            <form asp-controller="Tickets" asp-action="CreateTicket">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                 <input type="hidden" asp-for="ProjectId" value="@CurrentProjectSingleton.Instance.CurrentProject.ProjectId" readonly />
@@ -52,7 +52,7 @@
             </form>
         </div>
     </div>
-    <a asp-action="Index" asp-route-projectId="@CurrentProjectSingleton.Instance.CurrentProject.ProjectId">Back to List</a>
+    <a asp-controller="Tickets" asp-action="Index" asp-route-projectId="@CurrentProjectSingleton.Instance.CurrentProject.ProjectId">Back to List</a>
 </div>
 
 
