@@ -10,9 +10,11 @@
         <!-- Search -->
         <div class="d-none d-inline-block form-inline mr-auto mw-100 navbar-search">
             <div class="input-group">
+                <!-- Input for search -->
                 <input id="searchInput" type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
                        aria-label="Search" aria-describedby="basic-addon2">
                 <div class="input-group-append">
+                    <!-- Search button -->
                     <button id="searchButton" class="btn btn-primary" type="button">
                         <i class="fas fa-search fa-sm"></i>
                     </button>
@@ -20,17 +22,18 @@
             </div>
         </div>
 
-        <!-- Create -->
+        <!-- Create button -->
         <a asp-controller="Projects" asp-action="CreateProject" class="btn btn-primary mr-auto mw-100" type="button">Create New</a>
 
     </div>
 
-
     <div class="card shadow mb-5">
-        <div class="table-responsive ">
+        <div class="table-responsive">
+            <!-- Projects table -->
             <table class="table table-bordered m-0" id="dataTable" width="100%" cellspacing="0">
                 <thead>
                     <tr>
+                        <!-- Table headers -->
                         <th>
                             @Html.DisplayNameFor(model => model.Title)
                         </th>
@@ -40,13 +43,16 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <!-- Loop through each project -->
                     @foreach (var item in Model)
                     {
                         <tr>
                             <td>
+                                <!-- Link to project details -->
                                 <a asp-controller="Tickets" asp-action="Index" asp-route-projectId="@item.ProjectId">@Html.DisplayFor(modelItem => item.Title)</a>
                             </td>
                             <td>
+                                <!-- Display project description -->
                                 @Html.DisplayFor(modelItem => item.Description)
                             </td>
                         </tr>
@@ -57,6 +63,7 @@
     </div>
 </div>
 
+<!-- JavaScript for searching projects -->
 <script>
     document.getElementById('searchButton').addEventListener('click', function () {
         performSearch();
@@ -67,13 +74,16 @@
     });
 
     function performSearch() {
+        // Get search text
         var searchText = document.getElementById('searchInput').value.toLowerCase();
         var rows = document.getElementById('dataTable').getElementsByTagName('tbody')[0].getElementsByTagName('tr');
 
+        // Loop through table rows
         for (var i = 0; i < rows.length; i++) {
             var title = rows[i].getElementsByTagName('td')[0].textContent.toLowerCase();
             var description = rows[i].getElementsByTagName('td')[1].textContent.toLowerCase();
 
+            // Show or hide rows based on search text
             if (title.includes(searchText) || description.includes(searchText)) {
                 rows[i].style.display = "";
             } else {

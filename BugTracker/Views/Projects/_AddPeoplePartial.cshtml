@@ -1,25 +1,37 @@
 ﻿@model BugTracker.Models.ProjectUser
 
 <form asp-controller="Projects" asp-action="AddPeople">
+    <!-- Display validation errors -->
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <!-- Hidden field for ProjectId -->
     <input type="hidden" asp-for="ProjectId" />
+
+    <!-- Form group for UserEmail -->
     <div class="form-group">
         <label asp-for="UserEmail" class="control-label"></label>
         <input asp-for="UserEmail" class="form-control" />
         <span asp-validation-for="UserEmail" class="text-danger"></span>
     </div>
+
+    <!-- Form group for RoleId -->
     <div class="form-group">
         <label asp-for="RoleId" class="control-label"></label>
         <select asp-for="RoleId" class="form-control" asp-items="@ViewBag.RoleList"></select>
         <span asp-validation-for="RoleId" class="text-danger"></span>
     </div>
+
+    <!-- Form group for buttons -->
     <div class="form-group">
+        <!-- Submit button -->
         <input type="submit" value="AddPeople" class="btn btn-primary" />
+        <!-- Cancel button -->
         <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
     </div>
 </form>
 
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

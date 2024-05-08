@@ -2,28 +2,36 @@
 
 @{
     ViewData["Title"] = "Edit";
-    Layout = "_TicketLayout";
+    Layout = "_TicketLayout"; // Using a layout named "_TicketLayout"
 }
 
 <div class="mx-5 py-3">
     <h2>Project details</h2>
     <div class="row pb-2">
         <div class="card shadow col-auto pt-3">
+            <!-- Form for editing project details -->
             <form asp-controller="Projects" asp-action="EditProject">
+                <!-- Display validation errors -->
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <!-- Hidden field for ProjectId -->
                 <input type="hidden" asp-for="ProjectId" />
+                <!-- Form group for Title -->
                 <div class="form-group">
                     <label asp-for="Title" class="control-label"></label>
                     <input asp-for="Title" class="form-control" />
                     <span asp-validation-for="Title" class="text-danger"></span>
                 </div>
+                <!-- Form group for Description -->
                 <div class="form-group">
                     <label asp-for="Description" class="control-label"></label>
-                    <textarea asp-for="Description" class="form-control" style=" height:200px; width: 400px"></textarea>
+                    <textarea asp-for="Description" class="form-control" style="height:200px; width: 400px"></textarea>
                     <span asp-validation-for="Description" class="text-danger"></span>
                 </div>
+                <!-- Form group for buttons -->
                 <div class="form-group">
+                    <!-- Save button -->
                     <input type="submit" value="Save" class="btn btn-primary" />
+                    <!-- Delete button (opens a modal) -->
                     <a class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">
                         Delete
                     </a>
@@ -46,9 +54,12 @@
             </div>
             <div class="modal-body">Select "Delete" below to confirm.</div>
             <div class="modal-footer">
+                <!-- Cancel button -->
                 <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                <!-- Form for deleting the project -->
                 <form asp-controller="Projects" asp-action="DeleteProject" asp-route-id="@Model.ProjectId" method="post">
                     <input type="hidden" asp-for="ProjectId" />
+                    <!-- Delete button -->
                     <input type="submit" value="Delete" class="btn btn-danger" />
                 </form>
             </div>
@@ -57,5 +68,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

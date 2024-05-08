@@ -1,10 +1,14 @@
 ﻿@model IEnumerable<BugTracker.Models.ProjectUser>
 
 @{
+    // Setting the title of the view
     ViewData["Title"] = "Team Members";
+    // Setting the layout of the view
     Layout = "_TicketLayout";
 
+    // Retrieving roles from ViewBag
     var roles = ViewBag.Roles as List<Role>;
+    // Initializing a variable to hold the selected user (currently not used in the view)
     ProjectUser? selectedUser = null;
 }
 
@@ -25,10 +29,10 @@
         </div>
 
         <!-- Create -->
+        <!-- Button to open modal for adding new people -->
         <a class="btn btn-primary" data-toggle="modal" data-target="#addPeopleModal">
             Add people
         </a>
-
     </div>
     <div class="card shadow mb-5">
         <div class="table-responsive ">
@@ -47,30 +51,38 @@
                     </tr>
                 </thead>
                 <tbody>
-            @foreach (var item in Model) {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.UserEmail)
-                        </td>
-                        <td>
-                            @{
-                                var role = roles.FirstOrDefault(r => r.RoleId == item.RoleId);
-                                if (role != null)
-                                {
-                                    @role.Title
+                    <!-- Loop through each project user -->
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <!-- Display user email -->
+                                @Html.DisplayFor(modelItem => item.UserEmail)
+                            </td>
+                            <td>
+                                @{
+                                    // Retrieve role information for the user
+                                    var role = roles.FirstOrDefault(r => r.RoleId == item.RoleId);
+                                    if (role != null)
+                                    {
+                                        // Display user role
+                                        @role.Title
+                                    }
                                 }
-                            }
-                        </td>
-                        <td>
-                            @{
-                                if (User.Identity.Name != item.UserEmail && CurrentProjectSingleton.CurrentUserRole == "Admin")
-                                {
+                            </td>
+                            <td>
+                                @{
+                                    // Check if the current user is not the user being displayed and is an admin
+                                    if (User.Identity.Name != item.UserEmail && CurrentProjectSingleton.CurrentUserRole == "Admin")
+                                    {
                                         <div>
+                                            <!-- Button to open modal for editing the user -->
                                             <a class="btn btn-primary" data-toggle="modal" data-target="#editPeopleModal_@item.ProjectUserId">
                                                 Edit
                                             </a>
+                                            <!-- Modal for editing user details -->
                                             <div class="modal fade" id="editPeopleModal_@item.ProjectUserId" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-                                                aria-hidden="true">
+                                                 aria-hidden="true">
                                                 <div class="modal-dialog" role="document">
                                                     <div class="modal-content">
                                                         <div class="modal-header">
@@ -80,31 +92,30 @@
                                                             </button>
                                                         </div>
                                                         <div class="modal-body">
-                                                            <!-- Edit User Form -->
+                                                            <!-- Partial view to render edit user form -->
                                                             @await Html.PartialAsync("_EditPeoplePartial", item)
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-
                                         </div>
+                                    }
                                 }
-                            }
-                        </td>
-                    </tr>
-            }
+                            </td>
+                        </tr>
+                    }
                 </tbody>
             </table>
         </div>
     </div>
 </div>
 
-<!-- Add People Modal-->
-<div class="modal fade" id="addPeopleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-     aria-hidden="true">
+<!-- Add People Modal -->
+<div class="modal fade" id="addPeopleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
+                <!-- Modal title dynamically displays the current project's title -->
                 <h5 class="modal-title" id="exampleModalLabel">Add people to @CurrentProjectSingleton.Instance.CurrentProject.Title</h5>
                 <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
@@ -116,30 +127,35 @@
                     // Create a new instance of ProjectUser for the form
                     var newUser = new BugTracker.Models.ProjectUser();
                 }
+                <!-- Render partial view for adding new people -->
                 @await Html.PartialAsync("_AddPeoplePartial", newUser)
             </div>
         </div>
     </div>
 </div>
 
-
 <script>
+    // Event listener for search button click
     document.getElementById('searchButton').addEventListener('click', function () {
         performSearch();
     });
 
+    // Event listener for input in search field
     document.getElementById('searchInput').addEventListener('input', function () {
         performSearch();
     });
 
+    // Function to perform search filtering based on input text
     function performSearch() {
         var searchText = document.getElementById('searchInput').value.toLowerCase();
         var rows = document.getElementById('dataTable').getElementsByTagName('tbody')[0].getElementsByTagName('tr');
 
+        // Loop through table rows to filter based on user and role
         for (var i = 0; i < rows.length; i++) {
             var user = rows[i].getElementsByTagName('td')[0].textContent.toLowerCase();
             var role = rows[i].getElementsByTagName('td')[1].textContent.toLowerCase();
 
+            // Show or hide rows based on search text match
             if (user.includes(searchText) || role.includes(searchText)) {
                 rows[i].style.display = "";
             } else {

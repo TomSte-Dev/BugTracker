@@ -1,34 +1,40 @@
 ﻿@model BugTracker.Models.ProjectUser
 
-
 <form asp-controller="Projects" asp-action="EditTeamMember" asp-route-id="@Model.ProjectUserId" method="post">
+    <!-- Display validation errors -->
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <!-- Hidden fields for ProjectUserId and ProjectId -->
     <input type="hidden" asp-for="ProjectUserId" />
     <input type="hidden" asp-for="ProjectId" />
-    
 
+    <!-- Display UserEmail -->
     <div class="form-group">
         <input type="hidden" asp-for="UserEmail" />
         <label asp-for="UserEmail" class="control-label"></label>
         <p class="text-dark">@Model.UserEmail</p>
     </div>
 
+    <!-- Form group for RoleId -->
     <div class="form-group">
         <label asp-for="RoleId" class="control-label"></label>
         <select asp-for="RoleId" class="form-control" asp-items="@ViewBag.RoleList"></select>
         <span asp-validation-for="RoleId" class="text-danger"></span>
     </div>
 
+    <!-- Form group for buttons -->
     <div class="form-group mb-0">
         <div class="row">
+            <!-- Save button -->
             <div class="col-auto">
                 <input type="submit" value="Save" class="btn btn-primary btn-block" />
             </div>
         </div>
         <div class="row mt-2">
+            <!-- Cancel button -->
             <div class="col-auto">
                 <button class="btn btn-secondary btn-block" type="button" data-dismiss="modal">Cancel</button>
             </div>
+            <!-- Delete button -->
             <div class="col text-right">
                 <button class="btn btn-danger" asp-controller="Projects" asp-action="RemoveTeamMember" asp-route-id="@Model.ProjectUserId" method="post">
                     Delete user
@@ -40,5 +46,7 @@
 
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
