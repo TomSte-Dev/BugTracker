@@ -4,58 +4,73 @@
     ViewData["Title"] = "Create";
     Layout = "_TicketLayout";
 }
+
 <div class="mx-5 my-3">
     <h2>Create ticket</h2>
     <div class="row pb-2">
         <div class="card shadow col-6 pt-3">
+            <!-- Form for creating a new ticket -->
             <form asp-controller="Tickets" asp-action="CreateTicket">
+                <!-- Display validation errors if any -->
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
+                <!-- Hidden field to store the project ID -->
                 <input type="hidden" asp-for="ProjectId" value="@CurrentProjectSingleton.Instance.CurrentProject.ProjectId" readonly />
 
-
+                <!-- Dropdown for selecting the ticket status -->
                 <div class="form-group">
                     <label asp-for="StatusId" class="control-label">Status</label>
                     <select asp-for="StatusId" class="form-control" asp-items="ViewBag.Statuses"></select>
                     <span asp-validation-for="StatusId" class="text-danger"></span>
                 </div>
 
+                <!-- Input field for entering the ticket title -->
                 <div class="form-group">
                     <label asp-for="Title" class="control-label"></label>
                     <input asp-for="Title" class="form-control" />
                     <span asp-validation-for="Title" class="text-danger"></span>
                 </div>
+
+                <!-- Textarea for entering the ticket description -->
                 <div class="form-group">
                     <label asp-for="Description" class="control-label"></label>
-                    <textarea asp-for="Description" class="form-control" style=" height:100px;"></textarea>
+                    <textarea asp-for="Description" class="form-control" style="height:100px;"></textarea>
                     <span asp-validation-for="Description" class="text-danger"></span>
                 </div>
 
-
+                <!-- Dropdown for selecting the assignee -->
                 <div class="form-group">
                     <label asp-for="AssigneeEmail" class="control-label"></label>
                     <select asp-for="AssigneeEmail" class="form-control" asp-items="ViewBag.UserEmails"></select>
                     <span asp-validation-for="AssigneeEmail" class="text-danger"></span>
                 </div>
+
+                <!-- Dropdown for selecting the reporter -->
                 <div class="form-group">
                     <label asp-for="ReporterEmail" class="control-label"></label>
                     <select asp-for="ReporterEmail" class="form-control" asp-items="ViewBag.UserEmails"></select>
                     <span asp-validation-for="ReporterEmail" class="text-danger"></span>
                 </div>
 
+                <!-- Hidden fields for date created, last update time, and comments -->
                 <input asp-for="DateCreated" type="hidden" value="@DateTime.Now" />
                 <input asp-for="LastUpdateTime" type="hidden" value="@DateTime.Now" />
                 <input asp-for="Comments" type="hidden" value="@null" />
+
+                <!-- Submit button -->
                 <div class="form-group">
                     <input type="submit" value="Create" class="btn btn-primary" />
                 </div>
             </form>
         </div>
     </div>
+    <!-- Link to go back to the list of tickets -->
     <a asp-controller="Tickets" asp-action="Index" asp-route-projectId="@CurrentProjectSingleton.Instance.CurrentProject.ProjectId">Back to List</a>
 </div>
 
-
+<!-- Include validation scripts -->
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

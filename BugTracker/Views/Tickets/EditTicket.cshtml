@@ -8,30 +8,40 @@
 <div class="mx-5 py-3">
     <h2>@Model.Title</h2>
     <div class="card shadow p-3">
+        <!-- Form for editing a ticket -->
         <form asp-controller="Tickets" asp-action="EditTicket">
             <div class="row">
                 <div class="col">
+                    <!-- Display validation errors if any -->
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <!-- Hidden fields for storing ticket ID and project ID -->
                     <input type="hidden" asp-for="TicketId" />
                     <input type="hidden" asp-for="ProjectId" />
 
+                    <!-- Input field for editing the ticket title -->
                     <div class="form-group">
                         <label asp-for="Title" class="control-label"></label>
                         <input asp-for="Title" class="form-control" />
                         <span asp-validation-for="Title" class="text-danger"></span>
                     </div>
+
+                    <!-- Textarea for editing the ticket description -->
                     <div class="form-group">
                         <label asp-for="Description" class="control-label"></label>
-                        <textarea asp-for="Description" class="form-control" style=" height:205px"></textarea>
+                        <textarea asp-for="Description" class="form-control" style="height:205px"></textarea>
                         <span asp-validation-for="Description" class="text-danger"></span>
                     </div>
 
+                    <!-- Submit button and link to go back to the list of tickets -->
                     <div class="form-group">
                         <input type="submit" value="Save" class="btn btn-primary mr-2" />
                         <a asp-action="Index" asp-route-projectId="@CurrentProjectSingleton.Instance.CurrentProject.ProjectId">Back to List</a>
                     </div>
                 </div>
+
+                <!-- Sidebar with additional ticket details -->
                 <div class="col-auto">
+                    <!-- Dropdowns for selecting status, assignee, and reporter -->
                     <div class="form-group">
                         <label asp-for="StatusId" class="control-label">Status</label>
                         <select asp-for="StatusId" class="form-control" asp-items="ViewBag.Statuses"></select>
@@ -43,21 +53,28 @@
                         <select asp-for="AssigneeEmail" class="form-control" asp-items="ViewBag.UserEmails"></select>
                         <span asp-validation-for="AssigneeEmail" class="text-danger"></span>
                     </div>
+
                     <div class="form-group">
                         <label asp-for="ReporterEmail" class="control-label">Reporter</label>
                         <select asp-for="ReporterEmail" class="form-control" asp-items="ViewBag.UserEmails"></select>
                         <span asp-validation-for="ReporterEmail" class="text-danger"></span>
                     </div>
 
+                    <!-- Display date created and last updated -->
                     <div class="form-group">
                         <span>Date created: @Model.DateCreated.ToString("dd' 'MMMM' 'yyyy' 'HH:mm:ss")</span>
                         <input asp-for="DateCreated" type="hidden" />
                     </div>
+
                     <div class="form-group">
                         <span>Last updated: @Model.LastUpdateTime.ToString("dd' 'MMMM' 'yyyy' 'HH:mm:ss")</span>
                         <input asp-for="LastUpdateTime" type="hidden" value="@DateTime.Now" />
                     </div>
+
+                    <!-- Hidden field for storing comments -->
                     <input asp-for="Comments" type="hidden" value=@Model.Comments />
+
+                    <!-- Button to trigger delete confirmation modal -->
                     <div class="form-group">
                         <a class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">
                             Delete
@@ -81,7 +98,10 @@
             <!-- Display a list of comments -->
             @if (Model.Comments != null)
             {
-                var reversedComments = new List<BugTracker.Models.Comment>(Model.Comments);
+                // If there are comments to display reteive them and reverse them
+                // They are stored in order they are created in so index 0 would be
+                // The first ticket ever made. You need to reverse it to make sense
+                var reversedComments = new List<Comment>(Model.Comments);
                 reversedComments.Reverse();
                 @foreach (var comment in reversedComments)
                 {
@@ -90,6 +110,7 @@
                             <div class="text-truncate">
                                 @comment.CommentText
                             </div>
+                            <!-- Dispaly who commented and when -->
                             <div class="small text-gray-500">@comment.CommentedBy · @comment.CommentDate</div>
                         </div>
                     </div>
@@ -114,6 +135,7 @@
             <div class="modal-body">Select "Delete" below to confirm.</div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                <!-- On confirming deletion pass the tickets index to the action DeleteTicket in the Ticket controller -->
                 <form asp-controller="Tickets" asp-action="DeleteTicket" asp-route-id="@Model.TicketId" method="post">
                     <input type="hidden" asp-for="TicketId" />
                     <input type="submit" value="Delete" class="btn btn-danger" />

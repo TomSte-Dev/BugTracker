@@ -1,36 +1,46 @@
 ﻿@model IEnumerable<BugTracker.Models.Ticket>
 
 @{
+    // Setting the title of the view
     ViewData["Title"] = "Index";
+
+    // Setting the layout for the view
     Layout = "_TicketLayout";
 }
 
 <div class="mx-5 my-3">
+    <!-- Heading for the ticket list -->
     <h2>Ticket list</h2>
+
     <div class="pb-2">
-        <!-- Search -->
+        <!-- Search form -->
         <div class="d-none d-inline-block form-inline mr-auto mw-100 navbar-search">
             <div class="input-group">
+                <!-- Input field for search -->
                 <input id="searchInput" type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
                        aria-label="Search" aria-describedby="basic-addon2">
+                <!-- Button to trigger search -->
                 <div class="input-group-append">
                     <button id="searchButton" class="btn btn-primary" type="button">
+                        <!-- Icon for search button -->
                         <i class="fas fa-search fa-sm"></i>
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Create -->
+        <!-- Button to create a new ticket -->
         <a asp-controller="Tickets" asp-action="CreateTicket" class="btn btn-primary mr-auto mw-100" type="button">Create New</a>
-
     </div>
-    <!-- Results -->
+
+    <!-- Results section -->
     <div id="searchResults" class="card shadow mb-5">
         <div class="table-responsive">
+            <!-- Table to display ticket information -->
             <table class="table table-bordered m-0" id="dataTable" width="100%" cellspacing="0">
                 <thead>
                     <tr>
+                        <!-- Table headers -->
                         <th>Title</th>
                         <th>Status</th>
                         <th>Assignee</th>
@@ -40,30 +50,37 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <!-- Loop through each ticket item -->
                     @foreach (var item in Model)
                     {
                         <tr>
+                            <!-- Display ticket title with a link to edit -->
                             <td><a asp-controller="Tickets" asp-action="EditTicket" asp-route-id="@item.TicketId">@Html.DisplayFor(modelItem => item.Title)</a></td>
                             <td>
                                 @{
+                                    // Access the status dictionary stored in ViewBag
                                     var statusesDictionary = ViewBag.StatusesDictionary as Dictionary<int, string>;
-                                    var statusId = item.StatusId; // Assuming item is your current model item
+                                    var statusId = item.StatusId; // Get the status ID from the current item
 
                                     // Check if the status ID exists in the dictionary
                                     if (statusesDictionary.ContainsKey(statusId))
                                     {
-                                        // Display the title of the corresponding status
+                                        // Display the corresponding status title
                                         @statusesDictionary[statusId]
                                     } else
                                     {
-                                        // Handle case where corresponding status is not found
+                                        // If status not found in dictionary, display a default message
                                         @("Status Not Found")
                                     }
                                 }
                             </td>
+                            <!-- Display assignee email -->
                             <td>@Html.DisplayFor(modelItem => item.AssigneeEmail)</td>
+                            <!-- Display reporter email -->
                             <td>@Html.DisplayFor(modelItem => item.ReporterEmail)</td>
+                            <!-- Display date created -->
                             <td>@Html.DisplayFor(modelItem => item.DateCreated)</td>
+                            <!-- Display last update time -->
                             <td>@Html.DisplayFor(modelItem => item.LastUpdateTime)</td>
                         </tr>
                     }
@@ -74,19 +91,26 @@
 </div>
 
 <script>
+    // Add event listeners to the search button and input field
     document.getElementById('searchButton').addEventListener('click', function () {
-        performSearch();
+        performSearch(); // Call the performSearch function when the search button is clicked
     });
 
     document.getElementById('searchInput').addEventListener('input', function () {
-        performSearch();
+        performSearch(); // Call the performSearch function when the input value changes
     });
 
+    // Function to perform the search
     function performSearch() {
+        // Get the search text from the input field and convert to lowercase
         var searchText = document.getElementById('searchInput').value.toLowerCase();
+
+        // Get all the rows in the ticket table
         var rows = document.getElementById('dataTable').getElementsByTagName('tbody')[0].getElementsByTagName('tr');
 
+        // Loop through each row in the table
         for (var i = 0; i < rows.length; i++) {
+            // Get the text content of each cell in the row and convert to lowercase
             var title = rows[i].getElementsByTagName('td')[0].textContent.toLowerCase();
             var status = rows[i].getElementsByTagName('td')[1].textContent.toLowerCase();
             var assignee = rows[i].getElementsByTagName('td')[2].textContent.toLowerCase();
@@ -94,15 +118,16 @@
             var dateCreated = rows[i].getElementsByTagName('td')[4].textContent.toLowerCase();
             var lastUpdateTime = rows[i].getElementsByTagName('td')[5].textContent.toLowerCase();
 
+            // Check if any of the cell content matches the search text
             if (title.includes(searchText) ||
                 status.includes(searchText) ||
                 assignee.includes(searchText) ||
                 reporter.includes(searchText) ||
                 dateCreated.includes(searchText) ||
                 lastUpdateTime.includes(searchText)) {
-                rows[i].style.display = "";
+                rows[i].style.display = ""; // Show the row if there is a match
             } else {
-                rows[i].style.display = "none";
+                rows[i].style.display = "none"; // Hide the row if there is no match
             }
         }
     }

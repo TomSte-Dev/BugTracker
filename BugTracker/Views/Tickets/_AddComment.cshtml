@@ -1,19 +1,30 @@
 ﻿@model BugTracker.Models.Comment
 
+<!-- Form for adding a comment -->
 <form asp-controller="Tickets" asp-action="AddComment" asp-route-ticketId="@ViewBag.TicketId" method="post">
+    <!-- Display validation errors if any -->
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <!-- Hidden field to store the ticket ID -->
     <input type="hidden" asp-for="TicketId" value="@ViewBag.TicketId" readonly />
+    <!-- Textarea for entering the comment -->
     <div class="form-group">
-        <textarea asp-for="CommentText" placeholder="Add a comment..." class="form-control" style=" height:100px;"></textarea>
+        <textarea asp-for="CommentText" placeholder="Add a comment..." class="form-control" style="height:100px;"></textarea>
+        <!-- Display validation errors for the comment text -->
         <span asp-validation-for="CommentText" class="text-danger"></span>
     </div>
+    <!-- Hidden field to store the user who made the comment -->
     <input type="hidden" asp-for="CommentedBy" value="@User.Identity.Name" readonly />
+    <!-- Hidden field to store the date and time of the comment -->
     <input type="hidden" asp-for="CommentDate" value="@DateTime.Now" readonly />
+    <!-- Submit button -->
     <div class="form-group">
         <input type="submit" value="Submit Comment" class="btn btn-primary" />
     </div>
 </form>
 
+<!-- Include validation scripts -->
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
