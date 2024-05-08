@@ -1,5 +1,4 @@
 ﻿using BugTracker.Models;
-using Microsoft.AspNetCore.Mvc;
 
 namespace BugTracker.Repositories;
 

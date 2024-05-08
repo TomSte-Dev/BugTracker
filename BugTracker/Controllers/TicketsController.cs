@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using BugTracker.Data;
 using BugTracker.Models;
 using BugTracker.Repositories;
 using BugTracker.Utility;
 using Microsoft.CodeAnalysis;
 using System.Data;
-using Microsoft.Build.Evaluation;
 
 namespace BugTracker.Controllers;
 

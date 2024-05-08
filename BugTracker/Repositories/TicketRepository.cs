@@ -1,7 +1,6 @@
 ﻿using BugTracker.Data;
 using BugTracker.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Net.Sockets;
 
 namespace BugTracker.Repositories;
 

@@ -1,6 +1,4 @@
-﻿using System.Net.Sockets;
-
-namespace BugTracker.Models;
+﻿namespace BugTracker.Models;
 
 public class Project
 {

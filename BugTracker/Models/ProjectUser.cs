@@ -1,7 +1,4 @@
-﻿using BugTracker.Areas.Identity.Data;
-using System.Data;
-
-namespace BugTracker.Models;
+﻿namespace BugTracker.Models;
 
 public class ProjectUser
 {

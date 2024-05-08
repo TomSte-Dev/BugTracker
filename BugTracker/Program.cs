@@ -1,9 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using BugTracker.Data;
 using BugTracker.Areas.Identity.Data;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.AspNetCore.Identity;
 using BugTracker.Utility;
 using BugTracker.Repositories;
 namespace BugTracker;
