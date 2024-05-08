@@ -9,54 +9,41 @@
     <h2>Ticket list</h2>
     <div class="pb-2">
         <!-- Search -->
-        <form class="d-none d-inline-block form-inline mr-auto mw-100 navbar-search">
+        <div class="d-none d-inline-block form-inline mr-auto mw-100 navbar-search">
             <div class="input-group">
-                <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
+                <input id="searchInput" type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
                        aria-label="Search" aria-describedby="basic-addon2">
                 <div class="input-group-append">
-                    <button class="btn btn-primary" type="button">
+                    <button id="searchButton" class="btn btn-primary" type="button">
                         <i class="fas fa-search fa-sm"></i>
                     </button>
                 </div>
             </div>
-        </form>
+        </div>
 
         <!-- Create -->
         <a asp-action="Create" class="btn btn-primary mr-auto mw-100" type="button">Create New</a>
 
     </div>
-    <div class="card shadow mb-5">
-        <div class="table-responsive ">
+    <!-- Results -->
+    <div id="searchResults" class="card shadow mb-5">
+        <div class="table-responsive">
             <table class="table table-bordered m-0" id="dataTable" width="100%" cellspacing="0">
                 <thead>
                     <tr>
-                        <th>
-                            Title
-                        </th>
-                        <th>
-                            Status
-                        </th>
-                        <th>
-                            Assignee
-                        </th>
-                        <th>
-                            Reporter
-                        </th>
-                        <th>
-                            Date Created
-                        </th>
-                        <th>
-                            Last Update Time
-                        </th>
+                        <th>Title</th>
+                        <th>Status</th>
+                        <th>Assignee</th>
+                        <th>Reporter</th>
+                        <th>Date Created</th>
+                        <th>Last Update Time</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td>
-                                <a asp-action="Edit" asp-route-id="@item.TicketId">@Html.DisplayFor(modelItem => item.Title)</a>
-                            </td>
+                            <td><a asp-action="Edit" asp-route-id="@item.TicketId">@Html.DisplayFor(modelItem => item.Title)</a></td>
                             <td>
                                 @{
                                     var statusesDictionary = ViewBag.StatusesDictionary as Dictionary<int, string>;
@@ -74,18 +61,10 @@
                                     }
                                 }
                             </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.AssigneeEmail)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.ReporterEmail)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.DateCreated)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.LastUpdateTime)
-                            </td>
+                            <td>@Html.DisplayFor(modelItem => item.AssigneeEmail)</td>
+                            <td>@Html.DisplayFor(modelItem => item.ReporterEmail)</td>
+                            <td>@Html.DisplayFor(modelItem => item.DateCreated)</td>
+                            <td>@Html.DisplayFor(modelItem => item.LastUpdateTime)</td>
                         </tr>
                     }
                 </tbody>
@@ -93,3 +72,38 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.getElementById('searchButton').addEventListener('click', function () {
+        performSearch();
+    });
+
+    document.getElementById('searchInput').addEventListener('input', function () {
+        performSearch();
+    });
+
+    function performSearch() {
+        var searchText = document.getElementById('searchInput').value.toLowerCase();
+        var rows = document.getElementById('dataTable').getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+        for (var i = 0; i < rows.length; i++) {
+            var title = rows[i].getElementsByTagName('td')[0].textContent.toLowerCase();
+            var status = rows[i].getElementsByTagName('td')[1].textContent.toLowerCase();
+            var assignee = rows[i].getElementsByTagName('td')[2].textContent.toLowerCase();
+            var reporter = rows[i].getElementsByTagName('td')[3].textContent.toLowerCase();
+            var dateCreated = rows[i].getElementsByTagName('td')[4].textContent.toLowerCase();
+            var lastUpdateTime = rows[i].getElementsByTagName('td')[5].textContent.toLowerCase();
+
+            if (title.includes(searchText) ||
+                status.includes(searchText) ||
+                assignee.includes(searchText) ||
+                reporter.includes(searchText) ||
+                dateCreated.includes(searchText) ||
+                lastUpdateTime.includes(searchText)) {
+                rows[i].style.display = "";
+            } else {
+                rows[i].style.display = "none";
+            }
+        }
+    }
+</script>
