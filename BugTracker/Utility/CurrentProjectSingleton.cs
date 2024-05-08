@@ -2,7 +2,7 @@
 
 namespace BugTracker.Utility;
 
-// Singleton class to centralise storing the currently selected project
+// Singleton class to centralize storing the currently selected project
 public class CurrentProjectSingleton
 {
     // The single instance of this class
@@ -10,12 +10,11 @@ public class CurrentProjectSingleton
     private static Project? _currentProject;
     private static string? _currentUserRole;
 
-
     // Private constructor to prevent external instantiation
     private CurrentProjectSingleton()
     {
         // Default value for the project
-        // Set on first instantion
+        // Set on first instantiation
         _currentProject = null;
         _currentUserRole = null;
     }
@@ -26,7 +25,7 @@ public class CurrentProjectSingleton
         // Initialization of the singleton instance
         get
         {
-            // If an instance doesnt exist we create one
+            // If an instance doesn't exist we create one
             if (_instance == null)
             {
                 _instance = new CurrentProjectSingleton();
@@ -36,12 +35,16 @@ public class CurrentProjectSingleton
     }
 
     // Property to get or set the current selected project
+    // This is set on selecting a project so in the ticket index
     public Project? CurrentProject
     {
         get { return _currentProject; }
         set { _currentProject = value; }
     }
 
+    // Property to get or set the current user's role
+    // Used primarily to check that the current user is an admin
+    // This is set on selecting a project so in the ticket index
     public static string? CurrentUserRole
     {
         get { return _currentUserRole; }
