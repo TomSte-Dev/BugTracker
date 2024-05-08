@@ -1,6 +1,6 @@
 ﻿@model BugTracker.Models.ProjectUser
 
-<form asp-action="AddPeople">
+<form asp-controller="Projects" asp-action="AddPeople">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <input type="hidden" asp-for="ProjectId" />
     <div class="form-group">

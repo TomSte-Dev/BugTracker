@@ -151,6 +151,33 @@ namespace BugTracker.Controllers
         #endregion
 
         #region Project Dashboard
+        public async Task<IActionResult> TeamMembers(int? projectId)
+        {
+            if (projectId == null)
+            {
+                return NotFound();
+            }
+
+            // Should check that current user is a project user.
+            bool isUserAssigned = await _projectRepository.IsUserAssignedToProject(projectId, User.Identity.Name);
+            if (!isUserAssigned || CurrentProjectSingleton.CurrentUserRole != "Admin")
+            {
+                return Unauthorized();
+            }
+
+            var users = await _projectRepository.GetUsersByProjectId(projectId);
+
+            // Fetch roles from the database
+            var roles = _projectRepository.AllRoles;
+            // Pass roles to the ViewBag
+            ViewBag.Roles = roles;
+
+            // Pass the list of statuses to the view
+            ViewBag.RoleList = new SelectList(roles, "RoleId", "Title");
+
+            return View(users);
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditTeamMember(int? id, [Bind("ProjectUserId,ProjectId,UserEmail,RoleId")] ProjectUser projectUser)
@@ -167,7 +194,7 @@ namespace BugTracker.Controllers
 
             await _projectRepository.UpdateProjectUser(projectUser);
 
-            return RedirectToAction("TeamMembers", "Tickets", new { CurrentProjectSingleton.Instance.CurrentProject.ProjectId });
+            return RedirectToAction("TeamMembers", "Projects", new { CurrentProjectSingleton.Instance.CurrentProject.ProjectId });
         }
 
         [HttpPost]
@@ -186,9 +213,31 @@ namespace BugTracker.Controllers
 
             await _projectRepository.DeleteProjectUser(id);
 
-            return RedirectToAction("TeamMembers", "Tickets", new { CurrentProjectSingleton.Instance.CurrentProject.ProjectId });
+            return RedirectToAction("TeamMembers", "Projects", new { CurrentProjectSingleton.Instance.CurrentProject.ProjectId });
         }
 
+        public async Task<IActionResult> AddPeople([Bind("ProjectId,UserEmail,RoleId")] ProjectUser projectUser)
+        {
+            if (CurrentProjectSingleton.CurrentUserRole != "Admin")
+            {
+                return Unauthorized();
+            }
+
+            if (ModelState.IsValid)
+            {
+                // Check that user doesn't currently exist
+                var userEmails = await _projectRepository.GetUserEmailsByProjectId(CurrentProjectSingleton.Instance.CurrentProject.ProjectId);
+                if (!userEmails.Contains(projectUser.UserEmail))
+                {
+                    await _projectRepository.AddProjectUser(projectUser);
+                }
+
+                // Redirect to manage team
+                return RedirectToAction("TeamMembers", "Projects", new { CurrentProjectSingleton.Instance.CurrentProject.ProjectId });
+            }
+
+            return View();
+        }
         #endregion
     }
 }
