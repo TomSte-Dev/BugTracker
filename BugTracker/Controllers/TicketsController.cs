@@ -11,214 +11,242 @@ using BugTracker.Repositories;
 using BugTracker.Utility;
 using Microsoft.CodeAnalysis;
 using System.Data;
+using Microsoft.Build.Evaluation;
 
-namespace BugTracker.Controllers
+namespace BugTracker.Controllers;
+
+public class TicketsController : Controller
 {
-    public class TicketsController : Controller
+    // Declare private ticket and project repositories
+    private readonly ITicketRepository _ticketRepository;
+    private readonly IProjectRepository _projectRepository;
+
+    // Constructor with dependency injection for ITicketRepository and IProjectRepository
+    // This constructor is used by the ASP.NET Core framework to inject instances of the required repositories.
+    public TicketsController(ITicketRepository ticketRepository, IProjectRepository projectRepository)
     {
-        private readonly ITicketRepository _ticketRepository;
-        private readonly IProjectRepository _projectRepository;
+        // Assign injected instances to private fields
+        _ticketRepository = ticketRepository;
+        _projectRepository = projectRepository;
+    }
 
-        public TicketsController(ITicketRepository ticketRepository, IProjectRepository projectRepository)
+    // GET: Tickets/Index
+    // Displays the tickets for the specified project
+    public async Task<IActionResult> Index(int? projectId)
+    {
+        // Check if projectId is null
+        if (projectId == null)
         {
-            _ticketRepository = ticketRepository;
-            _projectRepository = projectRepository;
+            return NotFound();
         }
 
-        // GET: Tickets
-        public async Task<IActionResult> Index(int? projectId)
+        // Get the project by id from the repository
+        var project = await _projectRepository.GetProjectById(projectId);
+
+        // Check if the project is null
+        if (project == null)
         {
-            if (projectId == null)
-            {
-                return NotFound();
-            }
-
-            var project = await _projectRepository.GetProjectById(projectId);
-            if (project == null)
-            {
-                return NotFound();
-            }
-
-            CurrentProjectSingleton.Instance.CurrentProject = project;
-
-            // Should check that current user is a project user.
-            bool isUserAssigned = await _projectRepository.IsUserAssignedToProject(projectId, User.Identity.Name);
-            if (!isUserAssigned)
-            {
-                return Unauthorized();
-            } 
-            else
-            {
-                CurrentProjectSingleton.CurrentUserRole = await _projectRepository.GetProjectUserRole(
-                    User.Identity.Name,
-                    CurrentProjectSingleton.Instance.CurrentProject.ProjectId
-                    );
-            }
-
-
-            var tickets = _ticketRepository.AllTickets
-                .Where(ticket => ticket.ProjectId == projectId)
-                .OrderBy(ticket => ticket.DateCreated);
-
-
-            var statuses = _ticketRepository.AllStatuses.ToDictionary(status => status.StatusId, status => status.Name);
-            ViewBag.StatusesDictionary = statuses;
-
-            return View(tickets);
+            return NotFound();
         }
 
+        // Set the current project in the singleton
+        CurrentProjectSingleton.Instance.CurrentProject = project;
 
-        // GET: Tickets/Create
-        public async Task<IActionResult> CreateTicket()
+        // Check if the current user is assigned to the project
+        bool isUserAssigned = await _projectRepository.IsUserAssignedToProject(projectId, User.Identity.Name);
+        if (!isUserAssigned)
         {
-
-            int projectId = CurrentProjectSingleton.Instance.CurrentProject.ProjectId;
-            var statuses = _ticketRepository.AllStatuses;
-
-            var userEmails = await _projectRepository.GetUserEmailsByProjectId(projectId);
-
-            // Pass the list of user emails to the view
-            ViewBag.UserEmails = new SelectList(userEmails);
-
-            // Pass the list of statuses to the view
-            ViewBag.Statuses = new SelectList(statuses, "StatusId", "Name");
-
-
-
-            return View();
+            return Unauthorized();
+        } 
+        else
+        {
+            // Set the current user role in the singleton
+            CurrentProjectSingleton.CurrentUserRole = 
+                await _projectRepository.GetProjectUserRole
+                (
+                User.Identity.Name,
+                CurrentProjectSingleton.Instance.CurrentProject.ProjectId
+                );
         }
 
-        // POST: Tickets/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateTicket([Bind("TicketId,ProjectId,Title,Description,StatusId,AssigneeEmail,ReporterEmail,DateCreated,LastUpdateTime,Comments")] Ticket ticket)
+        // Get tickets for the specified project
+        var tickets = _ticketRepository.AllTickets
+            .Where(ticket => ticket.ProjectId == projectId)
+            .OrderBy(ticket => ticket.DateCreated);
+
+        // Get statuses from the repository and create a dictionary
+        var statuses = _ticketRepository.AllStatuses.ToDictionary(status => status.StatusId, status => status.Name);
+
+        // Pass the statuses dictionary to the view
+        // This allows for the user to select an id by a display name
+        ViewBag.StatusesDictionary = statuses;
+
+        // Return the view with the list of tickets
+        return View(tickets);
+    }
+
+    // GET: Tickets/Create
+    // Displays the form for creating a new ticket
+    public async Task<IActionResult> CreateTicket()
+    {
+        // Get the project id from the current project in the singleton
+        int projectId = CurrentProjectSingleton.Instance.CurrentProject.ProjectId;
+
+        // Get all statuses from the repository
+        var statuses = _ticketRepository.AllStatuses;
+
+        // Get user emails associated with the project from the repository
+        var userEmails = await _projectRepository.GetUserEmailsByProjectId(projectId);
+
+        // Allow the user to select from emails and status instead of entering a email or Id
+        // Pass the list of user emails to the view using ViewBag
+        ViewBag.UserEmails = new SelectList(userEmails);
+        // Pass the list of statuses to the view using ViewBag
+        ViewBag.Statuses = new SelectList(statuses, "StatusId", "Name");
+
+        // Return the view for creating a new ticket
+        return View();
+    }
+
+    // POST: Tickets/Create
+    // Handles the creation of a new ticket
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateTicket([Bind("TicketId,ProjectId,Title,Description,StatusId,AssigneeEmail,ReporterEmail,DateCreated,LastUpdateTime,Comments")] Ticket ticket)
+    {
+        // Check if the model state is a valid ticket
+        if (ModelState.IsValid)
         {
-            if (ModelState.IsValid)
-            {
-                List<Comment> comment = new List<Comment>();
-                ticket.Comments = comment;
-                await _ticketRepository.AddTicket(ticket);
-                // Redirect with the projectId
-                return RedirectToAction("Index", "Tickets", new { CurrentProjectSingleton.Instance.CurrentProject.ProjectId });
+            // Create an empty list of comments and assign it to the ticket
+            List<Comment> comment = new List<Comment>();
+            ticket.Comments = comment;
 
-            } 
-            return View(ticket);
-        }
+            // Add the ticket to the repository
+            await _ticketRepository.AddTicket(ticket);
 
-        // GET: Tickets/EditTicket/5
-        public async Task<IActionResult> EditTicket(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var ticket = await _ticketRepository.GetTicketById(id);
-            if (ticket == null)
-            {
-                return NotFound();
-            }
-            ViewBag.TicketId = ticket.TicketId;
-
-            int projectId = CurrentProjectSingleton.Instance.CurrentProject.ProjectId;
-            var statuses = _ticketRepository.AllStatuses;
-
-            var userEmails = await _projectRepository.GetUserEmailsByProjectId(projectId); // Task<IEnumerable<string>>
-
-            // Pass the list of user emails to the view
-            ViewBag.UserEmails = new SelectList(userEmails);
-
-            // Pass the list of statuses to the view
-            ViewBag.Statuses = new SelectList(statuses, "StatusId", "Name");
-
-
-            return View(ticket);
-        }
-
-        // POST: Tickets/EditTicket/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditTicket(int id, [Bind("TicketId,ProjectId,Title,Description,StatusId,AssigneeEmail,ReporterEmail,DateCreated,LastUpdateTime,Comments")] Ticket ticket)
-        {
-            if (id != ticket.TicketId)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    await _ticketRepository.UpdateTicket(ticket);
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!TicketExists(ticket.TicketId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                // Redirect with the projectId
-                return RedirectToAction("EditTicket", "Tickets", new { id });
-            }
-            return View(ticket);
-        }
-
-
-        // POST: Tickets/Delete/5
-        [HttpPost, ActionName("DeleteTicket")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int? id)
-        {
-            // Validate Id
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            // Validate ticket
-            var ticket = await _ticketRepository.GetTicketById(id);
-            if (ticket == null)
-            {
-                return NotFound();
-            }
-
-
-
-            await _ticketRepository.DeleteTicketById(id);
-            // Redirect with the projectId
+            // Redirect to the ticket index page with the projectId
             return RedirectToAction("Index", "Tickets", new { CurrentProjectSingleton.Instance.CurrentProject.ProjectId });
-        }
-
-        private bool TicketExists(int id)
+        } else
         {
-            return _ticketRepository.AllTickets.Any(e => e.TicketId == id);
+            // If the model state is not valid, return the view with the ticket
+            return View(ticket);
         }
+    }
 
-        [HttpPost]
-        public async Task<IActionResult> AddComment(int? ticketId, [Bind("CommentId,TicketId,CommentText,CommentedBy,CommentDate")] Comment comment)
+
+    // GET: Tickets/EditTicket/5
+    // Displays the form for editing a ticket with the specified id
+    public async Task<IActionResult> EditTicket(int? id)
+    {
+        // Check if the id is null
+        if (id == null)
         {
-
-            // Retrieve the ticket associated with the comment
-            Ticket ticket = await _ticketRepository.GetTicketById(ticketId);
-
-            if (ticket == null)
-            {
-                return NotFound(); // Handle if ticket is not found
-            }
-
-            await _ticketRepository.AddCommentToTicket(ticket, comment);
-
-            // Redirect back to the ticket details page
-            return RedirectToAction("EditTicket", "Tickets", new { Id = ticketId });
+            return NotFound();
         }
+
+        // Get the ticket by id from the repository
+        var ticket = await _ticketRepository.GetTicketById(id);
+        // Check if the ticket is null
+        if (ticket == null)
+        {
+            return NotFound();
+        }
+        // Pass the ticket id to the view using ViewBag
+        ViewBag.TicketId = ticket.TicketId;
+
+        // Get the project id from the current project in the singleton
+        int projectId = CurrentProjectSingleton.Instance.CurrentProject.ProjectId;
+
+        // Get all statuses from the repository
+        var statuses = _ticketRepository.AllStatuses;
+
+        // Get user emails associated with the project from the repository
+        var userEmails = await _projectRepository.GetUserEmailsByProjectId(projectId); // Task<IEnumerable<string>>
+
+        // Allow the user to select from emails and status instead of entering a email or Id
+        // Pass the list of user emails to the view using ViewBag
+        ViewBag.UserEmails = new SelectList(userEmails);
+        // Pass the list of statuses to the view using ViewBag
+        ViewBag.Statuses = new SelectList(statuses, "StatusId", "Name");
+
+        // Return the view for editing the ticket
+        return View(ticket);
+    }
+
+
+    // POST: Tickets/EditTicket/5
+    // Handles the editing of a ticket with the specified id
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditTicket(int id, [Bind("TicketId,ProjectId,Title,Description,StatusId,AssigneeEmail,ReporterEmail,DateCreated,LastUpdateTime,Comments")] Ticket ticket)
+    {
+        // Check if the id in the URL matches the ticket's id
+        if (id != ticket.TicketId)
+        {
+            return NotFound();
+        }
+
+        // Check that there is a valid ticket passed in and that the id correspond to a valid ticket within the database
+        if (await _ticketRepository.GetTicketById(ticket.TicketId) != null && ModelState.IsValid)
+        {
+            // Update the ticket in the repository
+            await _ticketRepository.UpdateTicket(ticket);
+            // Redirect to the edit ticket page with the same id
+            return RedirectToAction("EditTicket", "Tickets", new { id });
+        }
+
+        // Return the view with the invalid ticket if the model state or ticket is not valid
+        return View(ticket);
+    }
+
+
+    // POST: Tickets/Delete/5
+    // Handles the deletion of a ticket with the specified id
+    [HttpPost, ActionName("DeleteTicket")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(int? id)
+    {
+        // Validate if id is null
+        if (id == null)
+        {
+            return NotFound();
+        }
+
+        // Get the ticket by id from the repository
+        var ticket = await _ticketRepository.GetTicketById(id);
+
+        // Check if the ticket exists
+        if (ticket == null)
+        {
+            return NotFound();
+        }
+
+        // Delete the ticket from the repository
+        await _ticketRepository.DeleteTicketById(id);
+
+        // Redirect to the ticket index page for the current project
+        return RedirectToAction("Index", "Tickets", new { CurrentProjectSingleton.Instance.CurrentProject.ProjectId });
+    }
+
+
+    // POST: Tickets/AddComment/5
+    // Handles the addition of a comment to a ticket
+    [HttpPost]
+    public async Task<IActionResult> AddComment(int? ticketId, [Bind("CommentId,TicketId,CommentText,CommentedBy,CommentDate")] Comment comment)
+    {
+        // Retrieve the ticket associated with the comment
+        Ticket ticket = await _ticketRepository.GetTicketById(ticketId);
+
+        // Check if the ticket is not found
+        if (ticket == null)
+        {
+            return NotFound();
+        }
+
+        // Add the comment to the ticket in the repository
+        await _ticketRepository.AddCommentToTicket(ticket, comment);
+
+        // Redirect back to the ticket details page with the same ticket id
+        return RedirectToAction("EditTicket", "Tickets", new { Id = ticketId });
     }
 }

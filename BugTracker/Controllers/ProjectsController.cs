@@ -18,9 +18,11 @@ namespace BugTracker.Controllers;
 
 public class ProjectsController : Controller
 {
+    // Declare private project repository
     private readonly IProjectRepository _projectRepository;
 
     // Constructor to inject project repository
+    // This constructor is used by the ASP.NET Core framework to inject instances of the required repositories.
     public ProjectsController(IProjectRepository projectRepository)
     {
         _projectRepository = projectRepository;
@@ -110,6 +112,7 @@ public class ProjectsController : Controller
             return NotFound();
         }
 
+        // Check that there is a valid project passed in and that the id correspond to a valid project within the database
         if(await _projectRepository.GetProjectById(project.ProjectId) != null && ModelState.IsValid) 
         {
             // Update the project using the repository
