@@ -173,7 +173,6 @@ public class TicketsController : Controller
         return View(ticket);
     }
 
-
     // POST: Tickets/EditTicket/5
     // Handles the editing of a ticket with the specified id
     [HttpPost]
@@ -186,19 +185,38 @@ public class TicketsController : Controller
             return NotFound();
         }
 
-        // Check that there is a valid ticket passed in and that the id correspond to a valid ticket within the database
-        if (await _ticketRepository.GetTicketById(ticket.TicketId) != null && ModelState.IsValid)
+        // Check if the ModelState is valid
+        if (ModelState.IsValid)
         {
-            // Update the ticket in the repository
-            await _ticketRepository.UpdateTicket(ticket);
-            // Redirect to the edit ticket page with the same id
+            try
+            {
+                // Attempt to update the ticket using the ticket repository
+                await _ticketRepository.UpdateTicket(ticket);
+            } catch (DbUpdateConcurrencyException)
+            {
+                // Check that the ticket to be updated exisits 
+                if (!TicketExists(ticket.TicketId))
+                {
+                    // If the ticket doesn't exist, return NotFound
+                    return NotFound();
+                } else
+                {
+                    // If there's a conflict, throw exception
+                    throw;
+                }
+            }
+            // Redirect to the EditTicket action with the same ticket ID
             return RedirectToAction("EditTicket", "Tickets", new { id });
         }
-
-        // Return the view with the invalid ticket if the model state or ticket is not valid
+        // If ModelState is not valid, return the view with the ticket data
         return View(ticket);
     }
 
+    // Checks if a ticket with the specified ID exists in the repository
+    private bool TicketExists(int id)
+    {
+        return _ticketRepository.AllTickets.Any(e => e.TicketId == id);
+    }
 
     // POST: Tickets/Delete/5
     // Handles the deletion of a ticket with the specified id

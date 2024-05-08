@@ -112,11 +112,27 @@ public class ProjectsController : Controller
             return NotFound();
         }
 
-        // Check that there is a valid project passed in and that the id correspond to a valid project within the database
-        if(await _projectRepository.GetProjectById(project.ProjectId) != null && ModelState.IsValid) 
+        // Check if the model state is valid
+        if (ModelState.IsValid)
         {
-            // Update the project using the repository
-            await _projectRepository.UpdateProject(project);
+            try
+            {
+                // Update the project using the repository
+                await _projectRepository.UpdateProject(project);
+            } catch (DbUpdateConcurrencyException)
+            {
+                // Check if the project does not exist
+                if (!ProjectExists(project.ProjectId))
+                {
+                    // Return not found status
+                    return NotFound();
+                } else
+                {
+                    // Re-throw the exception if the project exists
+                    throw;
+                }
+            }
+
             // Redirect to the index page of tickets for the current project
             return RedirectToAction("Index", "Tickets", new { CurrentProjectSingleton.Instance.CurrentProject.ProjectId });
         }
@@ -124,6 +140,13 @@ public class ProjectsController : Controller
         // If model state is not valid, return the view with the invalid project
         return View(project);
     }
+
+    // Checks if a project with the specified ID exists in the repository
+    private bool ProjectExists(int id)
+    {
+        return _projectRepository.AllProjects.Any(e => e.ProjectId == id);
+    }
+
 
     // POST: Projects/DeleteProject/5
     // Handles the deletion of a project with the given id
