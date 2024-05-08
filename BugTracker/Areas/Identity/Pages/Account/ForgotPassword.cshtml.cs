@@ -2,11 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using BugTracker.Areas.Identity.Data;
 using Microsoft.AspNetCore.Identity;
@@ -51,36 +49,46 @@ namespace BugTracker.Areas.Identity.Pages.Account
             public string Email { get; set; }
         }
 
+        // Handles the POST request when resetting password
         public async Task<IActionResult> OnPostAsync()
         {
+            // Checks if the model state is valid
             if (ModelState.IsValid)
             {
+                // Retrieves the user by email
                 var user = await _userManager.FindByEmailAsync(Input.Email);
+
+                // Checks if the user does not exist or is not confirmed
                 if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
                 {
-                    // Don't reveal that the user does not exist or is not confirmed
+                    // Avoid revealing that the user does not exist or is not confirmed
                     return RedirectToPage("./ForgotPasswordConfirmation");
                 }
 
-                // For more information on how to enable account confirmation and password reset please
-                // visit https://go.microsoft.com/fwlink/?LinkID=532713
+                // Generates a password reset token for the user
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+
+                // Resetting password
                 var callbackUrl = Url.Page(
                     "/Account/ResetPassword",
                     pageHandler: null,
                     values: new { area = "Identity", code },
                     protocol: Request.Scheme);
 
+                // Sends an email to the user with the password reset link
                 await _emailSender.SendEmailAsync(
                     Input.Email,
                     "Reset Password",
                     $"Please reset your password by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
+                // Redirects to the page indicating that the password reset email has been sent
                 return RedirectToPage("./ForgotPasswordConfirmation");
             }
 
+            // If model state is not valid, redisplay the page with validation errors
             return Page();
         }
+
     }
 }

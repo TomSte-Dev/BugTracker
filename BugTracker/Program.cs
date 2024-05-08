@@ -4,6 +4,7 @@ using BugTracker.Areas.Identity.Data;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using BugTracker.Utility;
 using BugTracker.Repositories;
+using Microsoft.AspNetCore.Identity;
 namespace BugTracker;
 
 public class Program

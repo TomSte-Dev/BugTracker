@@ -107,12 +107,19 @@ public class RegisterModel : PageModel
     }
 
 
+    // Handles the HTTP GET request for the registration page.
+    // Sets the return URL and retrieves external login schemes.
     public async Task OnGetAsync(string returnUrl = null)
     {
         ReturnUrl = returnUrl;
         ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
     }
 
+    // Handles the HTTP POST request for user registration.
+    // Sets the return URL and retrieves external login schemes.
+    // Creates a new user based on the provided input data and attempts to register.
+    // Sends a confirmation email if registration is successful and confirmation is required.
+    // Redirects to appropriate page based on registration status.
     public async Task<IActionResult> OnPostAsync(string returnUrl = null)
     {
         returnUrl ??= Url.Content("~/");
@@ -150,8 +157,7 @@ public class RegisterModel : PageModel
                 if (_userManager.Options.SignIn.RequireConfirmedAccount)
                 {
                     return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
-                }
-                else
+                } else
                 {
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return LocalRedirect(returnUrl);
@@ -167,13 +173,13 @@ public class RegisterModel : PageModel
         return Page();
     }
 
+    // Creates an instance of BugTrackerUser.
     private BugTrackerUser CreateUser()
     {
         try
         {
             return Activator.CreateInstance<BugTrackerUser>();
-        }
-        catch
+        } catch
         {
             throw new InvalidOperationException($"Can't create an instance of '{nameof(BugTrackerUser)}'. " +
                 $"Ensure that '{nameof(BugTrackerUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
@@ -181,6 +187,8 @@ public class RegisterModel : PageModel
         }
     }
 
+    // Retrieves the email store based on user manager configuration.
+    // Throws NotSupportedException if the user store does not support email.
     private IUserEmailStore<BugTrackerUser> GetEmailStore()
     {
         if (!_userManager.SupportsUserEmail)
@@ -189,4 +197,5 @@ public class RegisterModel : PageModel
         }
         return (IUserEmailStore<BugTrackerUser>)_userStore;
     }
+
 }

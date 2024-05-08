@@ -2,26 +2,31 @@
     // Layout = "/Areas/Identity/Pages/_Layout.cshtml";
     Layout = "/Views/Shared/_Layout.cshtml";
 }
+<!-- Account management card -->
 <div class="d-flex justify-content-center align-items-center" style="min-height: 60vh;">
     <div class="card shadow" style="width:800px;">
+        <!-- Card header -->
         <div class="card-header py-3">
             <h2 class="text-center">Manage your account</h2>
         </div>
+        <!-- Card body -->
         <div class="card-body">
             <div class="row">
+                <!-- Navigation column -->
                 <div class="col-md-3">
+                    <!-- Include navigation partial -->
                     <partial name="_ManageNav" />
                 </div>
+                <!-- Main content column -->
                 <div class="col-md-9">
+                    <!-- Render body content -->
                     @RenderBody()
                 </div>
             </div>
         </div>
-
+        <!-- Scripts section -->
         @section Scripts {
             @RenderSection("Scripts", required: false)
         }
-
     </div>
-
 </div>

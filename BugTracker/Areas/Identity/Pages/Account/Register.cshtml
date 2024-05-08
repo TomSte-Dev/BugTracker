@@ -5,7 +5,7 @@
     Layout = "_IdentityLayout";
 }
 
-
+<!-- Form for user registration with input fields for first name, last name, email, password, and confirm password. -->
 <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="card shadow identity">
     <div class="card-header pt-4">
         <h2 class="text-center">Create Account.</h2>
@@ -15,6 +15,7 @@
 
         <div class="row">
             <div class="col-md-6">
+                <!-- Input field for first name -->
                 <div class="form-floating mb-3">
                     <input asp-for="Input.FirstName" class="form-control" autocomplete="first-name" aria-required="true" placeholder="Joe" />
                     <label asp-for="Input.FirstName">First Name</label>
@@ -22,6 +23,7 @@
                 </div>
             </div>
             <div class="col-md-6">
+                <!-- Input field for last name -->
                 <div class="form-floating mb-3">
                     <input asp-for="Input.LastName" class="form-control" autocomplete="last-name" aria-required="true" placeholder="Bloggs" />
                     <label asp-for="Input.LastName">Last Name</label>
@@ -30,29 +32,31 @@
             </div>
         </div>
 
-
-
+        <!-- Input field for email -->
         <div class="form-floating mb-3">
             <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
             <label asp-for="Input.Email">Email</label>
             <span asp-validation-for="Input.Email" class="text-danger"></span>
         </div>
+        <!-- Input field for password -->
         <div class="form-floating mb-3">
             <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
             <label asp-for="Input.Password">Password</label>
             <span asp-validation-for="Input.Password" class="text-danger"></span>
         </div>
+        <!-- Input field for confirming password -->
         <div class="form-floating mb-3">
             <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
             <label asp-for="Input.ConfirmPassword">Confirm Password</label>
             <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
         </div>
 
+        <!-- Button to submit registration form -->
         <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
     </div>
-
 </form>
 
+<!-- Links for forgot password and login -->
 <div class="row py-1">
     <div class="col text-start ml-2">
         <a id="forgot-password" asp-page="./ForgotPassword">Forgot password?</a>
@@ -60,10 +64,8 @@
     <div class="col text-end mr-2">
         <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">Login</a>
     </div>
-    @* <p>
-    <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Resend email confirmation</a>
-    </p> *@
 </div>
+
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

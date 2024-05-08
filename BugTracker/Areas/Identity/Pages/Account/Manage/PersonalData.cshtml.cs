@@ -8,30 +8,32 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 
-namespace BugTracker.Areas.Identity.Pages.Account.Manage
+namespace BugTracker.Areas.Identity.Pages.Account.Manage;
+
+public class PersonalDataModel : PageModel
 {
-    public class PersonalDataModel : PageModel
+    private readonly UserManager<BugTrackerUser> _userManager;
+    private readonly ILogger<PersonalDataModel> _logger;
+
+    public PersonalDataModel(
+        UserManager<BugTrackerUser> userManager,
+        ILogger<PersonalDataModel> logger)
     {
-        private readonly UserManager<BugTrackerUser> _userManager;
-        private readonly ILogger<PersonalDataModel> _logger;
+        _userManager = userManager;
+        _logger = logger;
+    }
 
-        public PersonalDataModel(
-            UserManager<BugTrackerUser> userManager,
-            ILogger<PersonalDataModel> logger)
+    // Handles the HTTP GET request for the personal data page.
+    // Retrieves the current user's information and renders the page.
+    // Returns the rendered page if successful, NotFoundResult if user not found
+    public async Task<IActionResult> OnGet()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
         {
-            _userManager = userManager;
-            _logger = logger;
+            return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
-        public async Task<IActionResult> OnGet()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
-
-            return Page();
-        }
+        return Page();
     }
 }

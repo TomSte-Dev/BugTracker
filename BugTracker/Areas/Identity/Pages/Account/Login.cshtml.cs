@@ -81,48 +81,61 @@ public class LoginModel : PageModel
         public bool RememberMe { get; set; }
     }
 
+    // Handles GET requests to the login page 
     public async Task OnGetAsync(string returnUrl = null)
     {
+        // Adds error message to model state if it's not empty.
         if (!string.IsNullOrEmpty(ErrorMessage))
         {
             ModelState.AddModelError(string.Empty, ErrorMessage);
         }
 
+        // Sets return URL to default value if it's null or empty.
         returnUrl ??= Url.Content("~/");
 
-        // Clear the existing external cookie to ensure a clean login process
+        // Clears the existing external cookie to ensure a clean login process.
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
+        // Retrieves external authentication schemes and assigns them to the ExternalLogins property.
         ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
+        // Assigns the return URL to the property for use in the Razor Page.
         ReturnUrl = returnUrl;
     }
 
+    // Handles POST requests to the login page 
     public async Task<IActionResult> OnPostAsync(string returnUrl = null)
     {
+        // Sets return URL to default value if it's null or empty.
         returnUrl ??= Url.Content("~/");
 
+        // Retrieves external authentication schemes 
         ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
+        // Checks if model state is valid.
         if (ModelState.IsValid)
         {
-            // This doesn't count login failures towards account lockout
-            // To enable password failures to trigger account lockout, set lockoutOnFailure: true
+            // Attempts to sign in the user with the provided email and password.
             var result = await _signInManager.PasswordSignInAsync(Input.Email, PasswordHashing.Sha256(Input.Password), Input.RememberMe, lockoutOnFailure: false);
+
+            // Checks the result of the sign-in attempt.
             if (result.Succeeded)
             {
                 _logger.LogInformation("User logged in.");
                 return LocalRedirect(returnUrl);
             }
+            // Redirects to the two-factor authentication page if it's required.
             if (result.RequiresTwoFactor)
             {
                 return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
             }
+            // Redirects to the lockout page if the account is locked out.
             if (result.IsLockedOut)
             {
                 _logger.LogWarning("User account locked out.");
                 return RedirectToPage("./Lockout");
             }
+            // Adds error message to model state for invalid login attempt.
             else
             {
                 ModelState.AddModelError(string.Empty, "Invalid login attempt.");
@@ -130,7 +143,7 @@ public class LoginModel : PageModel
             }
         }
 
-        // If we got this far, something failed, redisplay form
+        // If we got this far, something failed, redisplay form.
         return Page();
     }
 }
