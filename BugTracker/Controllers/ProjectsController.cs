@@ -14,230 +14,265 @@ using Microsoft.DotNet.Scaffolding.Shared.ProjectModel;
 using BugTracker.Repositories;
 using BugTracker.Utility;
 
-namespace BugTracker.Controllers
+namespace BugTracker.Controllers;
+
+public class ProjectsController : Controller
 {
-    public class ProjectsController : Controller
+    private readonly IProjectRepository _projectRepository;
+
+    // Constructor to inject project repository
+    public ProjectsController(IProjectRepository projectRepository)
     {
-        private readonly IProjectRepository _projectRepository;
-        public ProjectsController(IProjectRepository projectRepository)
+        _projectRepository = projectRepository;
+    }
+
+    #region Project Creation
+
+    // GET: Projects/Index
+    // Displays projects accessible to the current user
+    public async Task<IActionResult> Index()
+    {
+        var projects = await _projectRepository.GetProjectsByUser(User.Identity.Name);
+        return View(projects);
+    }
+
+    // GET: Projects/CreateProject
+    // Displays the view to create a new project
+    public IActionResult CreateProject()
+    {
+        return View();
+    }
+
+    // POST: Projects/CreateProject
+    // Handles the creation of a new project
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateProject([Bind("ProjectId,Title,Description")] Project project)
+    {
+        // Check if the model state is valid
+        if (ModelState.IsValid)
         {
-            _projectRepository = projectRepository;
+            // Add the project using the repository
+            await _projectRepository.AddProject(project, User.Identity.Name);
 
-        }
-
-        #region Project Creation
-
-        // GET: Projects
-        public async Task<IActionResult> Index()
-        {
-            //Should only show projects this user has access to
-            var projects = await _projectRepository.GetProjectsByUser(User.Identity.Name);
-            return View(projects);
-        }
-
-
-        // GET: Projects/Create
-        public IActionResult CreateProject()
-        {
-            return View();
-        }
-
-        // POST: Projects/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateProject([Bind("ProjectId,Title,Description")] Project project)
-        {
-            if (ModelState.IsValid)
-            {
-                await _projectRepository.AddProject(project, User.Identity.Name);
-
-                return RedirectToAction(nameof(Index));
-            }
-            return View(project);
-        }
-
-        // GET: Projects/Edit/5
-        public async Task<IActionResult> EditProject(int? id)
-        {
-            if (CurrentProjectSingleton.CurrentUserRole != "Admin")
-            {
-                return Unauthorized();
-            }
-
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var project = await _projectRepository.GetProjectById(id);
-            if (project == null)
-            {
-                return NotFound();
-            }
-            return View(project);
-        }
-
-        // POST: Projects/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditProject(int id, [Bind("ProjectId,Title,Description")] Project project)
-        {
-            if (CurrentProjectSingleton.CurrentUserRole != "Admin")
-            {
-                return Unauthorized();
-            }
-
-            if (id != project.ProjectId)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    await _projectRepository.UpdateProject(project);
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ProjectExists(project.ProjectId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction("Index", "Tickets", new { CurrentProjectSingleton.Instance.CurrentProject.ProjectId });
-            }
-            return View(project);
-        }
-
-        // POST: Projects/Delete/5
-        [HttpPost, ActionName("DeleteProject")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int? id)
-        {
-            if (CurrentProjectSingleton.CurrentUserRole != "Admin")
-            {
-                return Unauthorized();
-            }
-
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var project = await _projectRepository.GetProjectById(id);
-            if (project == null)
-            {
-                return NotFound();
-            }
-
-            await _projectRepository.DeleteProjectById(id);
+            // Redirect to the project index page
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ProjectExists(int id)
-        {
-            return _projectRepository.AllProjects.Any(e => e.ProjectId == id);
-        }
-
-        #endregion
-
-        #region Project Dashboard
-        public async Task<IActionResult> TeamMembers(int? projectId)
-        {
-            if (projectId == null)
-            {
-                return NotFound();
-            }
-
-            // Should check that current user is a project user.
-            bool isUserAssigned = await _projectRepository.IsUserAssignedToProject(projectId, User.Identity.Name);
-            if (!isUserAssigned || CurrentProjectSingleton.CurrentUserRole != "Admin")
-            {
-                return Unauthorized();
-            }
-
-            var users = await _projectRepository.GetUsersByProjectId(projectId);
-
-            // Fetch roles from the database
-            var roles = _projectRepository.AllRoles;
-            // Pass roles to the ViewBag
-            ViewBag.Roles = roles;
-
-            // Pass the list of statuses to the view
-            ViewBag.RoleList = new SelectList(roles, "RoleId", "Title");
-
-            return View(users);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditTeamMember(int? id, [Bind("ProjectUserId,ProjectId,UserEmail,RoleId")] ProjectUser projectUser)
-        {
-            if (CurrentProjectSingleton.CurrentUserRole != "Admin")
-            {
-                return Unauthorized();
-            }
-
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            await _projectRepository.UpdateProjectUser(projectUser);
-
-            return RedirectToAction("TeamMembers", "Projects", new { CurrentProjectSingleton.Instance.CurrentProject.ProjectId });
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RemoveTeamMember(int? id)
-        {
-            if (CurrentProjectSingleton.CurrentUserRole != "Admin")
-            {
-                return Unauthorized();
-            }
-
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            await _projectRepository.DeleteProjectUser(id);
-
-            return RedirectToAction("TeamMembers", "Projects", new { CurrentProjectSingleton.Instance.CurrentProject.ProjectId });
-        }
-
-        public async Task<IActionResult> AddPeople([Bind("ProjectId,UserEmail,RoleId")] ProjectUser projectUser)
-        {
-            if (CurrentProjectSingleton.CurrentUserRole != "Admin")
-            {
-                return Unauthorized();
-            }
-
-            if (ModelState.IsValid)
-            {
-                // Check that user doesn't currently exist
-                var userEmails = await _projectRepository.GetUserEmailsByProjectId(CurrentProjectSingleton.Instance.CurrentProject.ProjectId);
-                if (!userEmails.Contains(projectUser.UserEmail))
-                {
-                    await _projectRepository.AddProjectUser(projectUser);
-                }
-
-                // Redirect to manage team
-                return RedirectToAction("TeamMembers", "Projects", new { CurrentProjectSingleton.Instance.CurrentProject.ProjectId });
-            }
-
-            return View();
-        }
-        #endregion
+        // If model state is not valid, return the view with the invalid project
+        return View(project);
     }
+
+    // GET: Projects/EditProject/5
+    // Displays the view to edit a project with the given id
+    public async Task<IActionResult> EditProject(int? id)
+    {
+        // Check if the user is not an admin
+        if (CurrentProjectSingleton.CurrentUserRole != "Admin")
+        {
+            return Unauthorized();
+        }
+
+        // Check if the id is null
+        if (id == null)
+        {
+            return NotFound();
+        }
+
+        // Get the project by id from the repository
+        var project = await _projectRepository.GetProjectById(id);
+
+        // Check if the project is null
+        if (project == null)
+        {
+            return NotFound();
+        }
+
+        // Return the view with the project data
+        return View(project);
+    }
+
+    // POST: Projects/EditProject/5
+    // Handles the editing of a project with the given id
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditProject(int id, [Bind("ProjectId,Title,Description")] Project project)
+    {
+        // Check if the user is not an admin
+        if (CurrentProjectSingleton.CurrentUserRole != "Admin")
+        {
+            return Unauthorized();
+        }
+
+        // Check if the id in the route does not match the project id in the model
+        if (id != project.ProjectId)
+        {
+            return NotFound();
+        }
+
+        if(await _projectRepository.GetProjectById(project.ProjectId) != null && ModelState.IsValid) 
+        {
+            // Update the project using the repository
+            await _projectRepository.UpdateProject(project);
+            // Redirect to the index page of tickets for the current project
+            return RedirectToAction("Index", "Tickets", new { CurrentProjectSingleton.Instance.CurrentProject.ProjectId });
+        }
+
+        // If model state is not valid, return the view with the invalid project
+        return View(project);
+    }
+
+    // POST: Projects/DeleteProject/5
+    // Handles the deletion of a project with the given id
+    [HttpPost, ActionName("DeleteProject")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(int? id)
+    {
+        // Check if the user is not an admin
+        if (CurrentProjectSingleton.CurrentUserRole != "Admin")
+        {
+            return Unauthorized();
+        }
+
+        // Check if the id is null
+        if (id == null)
+        {
+            return NotFound();
+        }
+
+        // Get the project by id from the repository
+        var project = await _projectRepository.GetProjectById(id);
+
+        // Check if the project is null
+        if (project == null)
+        {
+            return NotFound();
+        }
+
+        // Delete the project using the repository
+        await _projectRepository.DeleteProjectById(id);
+
+        // Redirect to the index page of projects
+        return RedirectToAction(nameof(Index));
+    }
+    #endregion
+
+    #region Project Dashboard
+    // GET: Projects/TeamMembers
+    // Displays the team members for a project with the given projectId
+    public async Task<IActionResult> TeamMembers(int? projectId)
+    {
+        // Check if projectId is null
+        if (projectId == null)
+        {
+            return NotFound();
+        }
+
+        // Check if the current user is assigned to the project or is an admin
+        bool isUserAssigned = await _projectRepository.IsUserAssignedToProject(projectId, User.Identity.Name);
+        if (!isUserAssigned || CurrentProjectSingleton.CurrentUserRole != "Admin")
+        {
+            return Unauthorized();
+        }
+
+        // Get users assigned to the project
+        var users = await _projectRepository.GetUsersByProjectId(projectId);
+
+        // Fetch roles from the database
+        var roles = _projectRepository.AllRoles;
+
+        // Pass roles to the ViewBag
+        ViewBag.Roles = roles;
+
+        // Pass the list of roles to the view
+        // Used within _AddPeople and _EditPeople to choose a role id by displaying the roles title for selection
+        ViewBag.RoleList = new SelectList(roles, "RoleId", "Title");
+
+        // Return the view with the list of users
+        return View(users);
+    }
+
+
+    // POST: Projects/EditTeamMember
+    // Handles the editing of a team member
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditTeamMember(int? id, [Bind("ProjectUserId,ProjectId,UserEmail,RoleId")] ProjectUser projectUser)
+    {
+        // Check if the user is not an admin
+        if (CurrentProjectSingleton.CurrentUserRole != "Admin")
+        {
+            return Unauthorized();
+        }
+
+        // Check if the id is null
+        if (id == null)
+        {
+            return NotFound();
+        }
+
+        // Update the project user using the repository
+        await _projectRepository.UpdateProjectUser(projectUser);
+
+        // Redirect to the TeamMember page
+        return RedirectToAction("TeamMembers", "Projects", new { CurrentProjectSingleton.Instance.CurrentProject.ProjectId });
+    }
+
+    // POST: Projects/RemoveTeamMember
+    // Handles the removal of a team member
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RemoveTeamMember(int? id)
+    {
+        // Check if the user is not an admin
+        if (CurrentProjectSingleton.CurrentUserRole != "Admin")
+        {
+            return Unauthorized();
+        }
+
+        // Check if the id is null
+        if (id == null)
+        {
+            return NotFound();
+        }
+
+        // Delete the project user using the repository
+        await _projectRepository.DeleteProjectUser(id);
+
+        // Redirect to the TeamMembers page
+        return RedirectToAction("TeamMembers", "Projects", new { CurrentProjectSingleton.Instance.CurrentProject.ProjectId });
+    }
+
+
+    // POST: Projects/AddPeople
+    // Handles the addition of people (team members) to the project
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddPeople([Bind("ProjectId,UserEmail,RoleId")] ProjectUser projectUser)
+    {
+        // Check if the user is not an admin
+        if (CurrentProjectSingleton.CurrentUserRole != "Admin")
+        {
+            return Unauthorized();
+        }
+
+        // Check if the model state is valid
+        if (ModelState.IsValid)
+        {
+            // Check if the user email is not already added to the project
+            var userEmails = await _projectRepository.GetUserEmailsByProjectId(CurrentProjectSingleton.Instance.CurrentProject.ProjectId);
+            if (!userEmails.Contains(projectUser.UserEmail))
+            {
+                // Add the project user using the repository
+                await _projectRepository.AddProjectUser(projectUser);
+            }
+
+            // Redirect to the TeamMembers pagee
+            return RedirectToAction("TeamMembers", "Projects", new { CurrentProjectSingleton.Instance.CurrentProject.ProjectId });
+        }
+
+        // If model state is not valid, return the view
+        return View();
+    }
+    #endregion
 }
