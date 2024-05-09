@@ -10,7 +10,7 @@ BugTracker is a bug tracking / ticket management system created for internal use
 
 **Instructions:**
 1. Clone or download the repository.
-2. Open Visual Studio 2022.
+2. Launch the solution in Visual Studio 2022.
 3. Launch the Package Manager Console.
 4. Execute the following command: `Update-database`.
 5. Run the application.
@@ -29,6 +29,7 @@ Upon launching the application, the database will be initialized with pre-config
    - Email: User3@email.com
    - Password: Secure@3
 
+<br>
 
 ## 🧰 Built with
 
