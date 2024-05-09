@@ -50,6 +50,23 @@ namespace BugTrackerTests.Mocks
             mockProjectRepository.Setup(repo => repo.AllRoles).Returns(roles);
             mockProjectRepository.Setup(repo => repo.AllProjects).Returns(projects);
 
+            // Setup the AddProject method to actually add projects to the list
+            mockProjectRepository.Setup(repo => repo.AddProject(It.IsAny<Project>(), It.IsAny<string>()))
+                .Returns(Task.CompletedTask)
+                .Callback<Project, string>((project, userEmail) =>
+                {
+                    // Add the project to the list
+                    projects.Add(project);
+                    var newProjectUser = new ProjectUser()
+                    {
+                        ProjectUserId = 2, // Doesnt matter for testing purposes but as we have a default user at 1 2 should do
+                        ProjectId = project.ProjectId,
+                        RoleId = 1,
+                        UserEmail = userEmail
+                    };
+                    users.Add(newProjectUser);
+                });
+
             mockProjectRepository.Setup(repo => repo.GetProjectsByUser(It.IsAny<string>()))
                 .Returns((string user) =>
                 {
@@ -66,6 +83,7 @@ namespace BugTrackerTests.Mocks
 
                     return Task.FromResult<IEnumerable<Project>>(userProjects);
                 });
+
 
             return mockProjectRepository;
         }
