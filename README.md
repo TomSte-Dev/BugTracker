@@ -29,8 +29,6 @@ Upon launching the application, the database will be initialized with pre-config
    - Email: User3@email.com
    - Password: Secure@3
 
-<br>
-
 ## 🧰 Built with
 
 <img align="left" alt="C#" title="C#" width="50px" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/csharp/csharp-original.svg" />
