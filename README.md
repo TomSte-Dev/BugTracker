@@ -1,15 +1,34 @@
 ## BugTracker
 
-BugTracker is a bug tracking / ticket management system built for internal use by a company. It is a web based application and has been built using ASP .NET MVC, utilising the identity for user management, and the entitiy framework as well as MSSQL server for the use of a relational database.
+BugTracker is a bug tracking / ticket management system created for internal use by a company. This web-based application is developed using ASP .NET MVC framework, integrating the Identity framework for user management, and Entity Framework along with MSSQL Server for efficient relational database operations.
 
-## Setup guide
+## Setup Guide
 
-This assumes you are using Visual Studio 2022 and .NET 8
+**Prerequisites:**
+- Visual Studio 2022
+- .NET 8
 
-1. Clone/Download the repository.
-2. Open the Package Manager Console.
-3. Enter the following: ```Update-database```.
-4. Run the application.
+**Instructions:**
+1. Clone or download the repository.
+2. Open Visual Studio 2022.
+3. Launch the Package Manager Console.
+4. Execute the following command: `Update-database`.
+5. Run the application.
+
+Upon launching the application, the database will be initialized with pre-configured data. It includes three seeded accounts:
+
+1. **User1**
+   - Email: User1@email.com
+   - Password: Secure@1
+
+2. **User2**
+   - Email: User2@email.com
+   - Password: Secure@2
+
+3. **User3**
+   - Email: User3@email.com
+   - Password: Secure@3
+
 
 ## 🧰 Built with
 
