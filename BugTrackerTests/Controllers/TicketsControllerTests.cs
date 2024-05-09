@@ -1,23 +1,49 @@
-﻿namespace BugTrackerTests.Controllers;
+﻿using BugTracker.Controllers;
+using BugTracker.Models;
+using BugTrackerTests.Mocks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+
+namespace BugTrackerTests.Controllers;
 
 public class TicketsControllerTests
 {
-    // Arrange
+    [Fact]
+    public async Task Index_ReturnsTicketsForProject()
+    {
+        // Arrange
+        var mockProjectRepository = RepositoryMocks.GetProjectRepository();
+        var mockTicketRepository = RepositoryMocks.GetTicketRepository();
 
-    // Mock repositories
-    // Projects, Tickets
+        var projectId = 1; // Sample project ID
 
-    // initialise a controller with mock repos
+        // Mock User.Identity.Name
+        var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+        {
+        new Claim(ClaimTypes.Name, "user1@email.com") // Replace with your sample user identity
+        }));
 
-    // Act
+        var controllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext { User = user }
+        };
 
-    // invoke methods
+        var controller = new TicketsController(mockTicketRepository.Object, mockProjectRepository.Object)
+        {
+            ControllerContext = controllerContext
+        };
 
-    // Assert
+        // Act
+        var result = await controller.Index(projectId);
 
-    // Check what is return such as
-    // Type
-    // Assert.Equal
+        // Assert
+        var viewResult = Assert.IsType<ViewResult>(result);
+        var model = Assert.IsAssignableFrom<IEnumerable<Ticket>>(viewResult.Model);
+        Assert.NotNull(model);
 
+        // Verify that the tickets returned belong to the specified project
+        Assert.All(model, t => Assert.Equal(projectId, t.ProjectId));
+    }
 
 }

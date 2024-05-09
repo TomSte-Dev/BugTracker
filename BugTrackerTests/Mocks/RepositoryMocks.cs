@@ -50,6 +50,18 @@ namespace BugTrackerTests.Mocks
             mockProjectRepository.Setup(repo => repo.AllRoles).Returns(roles);
             mockProjectRepository.Setup(repo => repo.AllProjects).Returns(projects);
 
+            // Return a project given an id
+            mockProjectRepository.Setup(repo => repo.GetProjectById(It.IsAny<int>()))
+                .ReturnsAsync((int id) => projects.FirstOrDefault(p => p.ProjectId == id));
+
+            mockProjectRepository.Setup(repo => repo.IsUserAssignedToProject(It.IsAny<int?>(), It.IsAny<string?>()))
+                .ReturnsAsync((int? projectId, string? user) =>
+                {
+                    // Simulate the behavior of querying the database to check if any project user matches the conditions
+                    bool isAssigned = users.Any(project => project.ProjectId == projectId && project.UserEmail == user);
+                    return(isAssigned);
+                });
+
             // Setup the AddProject method to actually add projects to the list
             mockProjectRepository.Setup(repo => repo.AddProject(It.IsAny<Project>(), It.IsAny<string>()))
                 .Returns(Task.CompletedTask)
@@ -67,6 +79,8 @@ namespace BugTrackerTests.Mocks
                     users.Add(newProjectUser);
                 });
 
+
+            // Provide a list of projects given a user email
             mockProjectRepository.Setup(repo => repo.GetProjectsByUser(It.IsAny<string>()))
                 .Returns((string user) =>
                 {
