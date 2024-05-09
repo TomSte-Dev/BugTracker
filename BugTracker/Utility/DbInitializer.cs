@@ -185,8 +185,8 @@ public class DbInitializer
                         .FirstOrDefaultAsync(),
                     AssigneeEmail = "user2@email.com",
                     ReporterEmail = "user1@email.com",
-                    DateCreated = DateTime.Parse("2024-05-08 09:00:00"), // Insert appropriate date and time
-                    LastUpdateTime = DateTime.Parse("2024-05-08 09:00:00"), // Insert appropriate date and time
+                    DateCreated = DateTime.Parse("2024-05-08 09:00:00"),
+                    LastUpdateTime = DateTime.Parse("2024-05-08 09:00:00"),
                     Comments = new List<Comment>()
                 }
             };
