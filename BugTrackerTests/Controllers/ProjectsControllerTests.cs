@@ -78,8 +78,6 @@ public class ProjectsControllerTests
         var result = await controller.CreateProject(project);
 
         // Assert
-        await mockProjectRepository.Object.AddProject(project, user.Identity.Name);
-
         var createdProject = (await mockProjectRepository.Object.GetProjectsByUser(user.Identity.Name))
             .Where(p => p.ProjectId == project.ProjectId)
             .FirstOrDefault();

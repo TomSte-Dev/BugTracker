@@ -1,5 +1,6 @@
 ﻿using BugTracker.Models;
 using BugTracker.Repositories;
+using Microsoft.CodeAnalysis;
 using Moq;
 
 namespace BugTrackerTests.Mocks
@@ -23,9 +24,9 @@ namespace BugTrackerTests.Mocks
                 }
             };
 
-            var projects = new List<Project>
+            var projects = new List<BugTracker.Models.Project>
             {
-                new Project()
+                new BugTracker.Models.Project()
                 {
                     ProjectId = 1,
                     Title = "Sample Project",
@@ -63,9 +64,9 @@ namespace BugTrackerTests.Mocks
                 });
 
             // Setup the AddProject method to actually add projects to the list
-            mockProjectRepository.Setup(repo => repo.AddProject(It.IsAny<Project>(), It.IsAny<string>()))
+            mockProjectRepository.Setup(repo => repo.AddProject(It.IsAny<BugTracker.Models.Project>(), It.IsAny<string>()))
                 .Returns(Task.CompletedTask)
-                .Callback<Project, string>((project, userEmail) =>
+                .Callback<BugTracker.Models.Project, string>((project, userEmail) =>
                 {
                     // Add the project to the list
                     projects.Add(project);
@@ -95,16 +96,28 @@ namespace BugTrackerTests.Mocks
                         .Where(p => projectIds.Contains(p.ProjectId))
                         .ToList();
 
-                    return Task.FromResult<IEnumerable<Project>>(userProjects);
+                    return Task.FromResult<IEnumerable<BugTracker.Models.Project>>(userProjects);
                 });
 
+            mockProjectRepository.Setup(repo => repo.GetUserEmailsByProjectId(It.IsAny<int>()))
+                .ReturnsAsync((int? id) =>
+                {
+                    // Assuming _context is your DbContext instance
+                    var userEmails = users
+                        .Where(u => u.ProjectId == id)
+                        .Select(u => u.UserEmail)
+                        .Distinct()
+                        .ToList();
+
+                    return userEmails;
+                });
 
             return mockProjectRepository;
         }
 
         public static Mock<ITicketRepository> GetTicketRepository()
         {
-            var status = new List<Status>
+            var statuses = new List<Status>
             {
                 new Status()
                 {
@@ -156,8 +169,23 @@ namespace BugTrackerTests.Mocks
             };
 
             var mockTicketRepository = new Mock<ITicketRepository>();
-            mockTicketRepository.Setup(repo => repo.AllStatuses).Returns(status);
+            mockTicketRepository.Setup(repo => repo.AllStatuses).Returns(statuses);
             mockTicketRepository.Setup(repo => repo.AllTickets).Returns(tickets);
+
+            mockTicketRepository.Setup(repo => repo.GetTicketById(It.IsAny<int>()))
+                .ReturnsAsync((int id) => tickets.FirstOrDefault(t => t.TicketId == id));
+
+
+            mockTicketRepository.Setup(repo => repo.AddTicket(It.IsAny<Ticket>()))
+                .Returns(Task.CompletedTask)
+                .Callback<Ticket>((ticket) =>
+                {
+                    // Add the project to the list
+                    tickets.Add(ticket);
+                    if (ticket.Comments != null)
+                        comments.AddRange(ticket.Comments);
+                });
+
 
             return mockTicketRepository;
         }

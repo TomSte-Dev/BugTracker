@@ -1,9 +1,13 @@
 ﻿using BugTracker.Controllers;
 using BugTracker.Models;
+using BugTracker.Repositories;
+using BugTracker.Utility;
 using BugTrackerTests.Mocks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Moq;
 using System.Security.Claims;
+using System.Xml.Linq;
 
 namespace BugTrackerTests.Controllers;
 
@@ -46,4 +50,56 @@ public class TicketsControllerTests
         Assert.All(model, t => Assert.Equal(projectId, t.ProjectId));
     }
 
+    [Fact]
+    public async Task CreateTicket_ReturnsRedirectToAction()
+    {
+        // Arrange
+        var mockProjectRepository = RepositoryMocks.GetProjectRepository();
+        var mockTicketRepository = RepositoryMocks.GetTicketRepository();
+
+        var projectId = 1; // Set up the project ID
+
+        // Set the CurrentProject property directly
+        CurrentProjectSingleton.Instance.CurrentProject = new Project { ProjectId = projectId };
+
+        var controller = new TicketsController(mockTicketRepository.Object, mockProjectRepository.Object);
+
+        var comments = new List<Comment>()
+        {
+            new Comment
+            {
+                TicketId = 2,
+                CommentId = 2,
+                CommentText = "Sample comment",
+                CommentedBy = "user1@email.com",
+                CommentDate = DateTime.Parse("2024-05-09 09:31:00"),
+            }
+        };
+
+        var ticket = new Ticket()
+        {
+            TicketId = 2,
+            ProjectId = 1,
+            Title = "test",
+            Description = "test ticket",
+            StatusId = 1,
+            AssigneeEmail = "user2@email.com",
+            ReporterEmail = "user1@email.com",
+            DateCreated = DateTime.Parse("2024-05-08 09:00:00"),
+            LastUpdateTime = DateTime.Parse("2024-05-09 09:30:00"),
+            Comments = comments // Assign comments here
+        };
+
+        // Act
+        var result = await controller.CreateTicket(ticket);
+
+        // Assert
+        var createdTicket = (await mockTicketRepository.Object.GetTicketById(ticket.TicketId));
+
+        Assert.NotNull(createdTicket);
+        Assert.Equal(ticket, createdTicket);
+
+        var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Index", redirectToActionResult.ActionName);
+    }
 }
