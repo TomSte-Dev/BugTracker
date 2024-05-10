@@ -15,6 +15,7 @@ namespace BugTrackerTests.Controllers;
 
 public class TicketsControllerTests
 {
+    // Test to ensure that Index action returns tickets belonging to the specified project
     [Fact]
     public async Task Index_ReturnsTicketsForProject()
     {
@@ -22,7 +23,7 @@ public class TicketsControllerTests
         var mockProjectRepository = RepositoryMocks.GetProjectRepository();
         var mockTicketRepository = RepositoryMocks.GetTicketRepository();
 
-        var projectId = 1; // Sample project ID
+        var projectId = 1; 
 
         // Mock User.Identity.Name
         var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
@@ -52,6 +53,7 @@ public class TicketsControllerTests
         Assert.All(model, t => Assert.Equal(projectId, t.ProjectId));
     }
 
+    // Test to ensure that CreateTicket action returns a RedirectToActionResult
     [Fact]
     public async Task CreateTicket_ReturnsRedirectToAction()
     {
@@ -61,12 +63,12 @@ public class TicketsControllerTests
         var mockProjectRepository = RepositoryMocks.GetProjectRepository();
         var mockTicketRepository = RepositoryMocks.GetTicketRepository();
 
-
         // Set the CurrentProject property directly
         CurrentProjectSingleton.Instance.CurrentProject = new BugTracker.Models.Project { ProjectId = projectId };
 
         var controller = new TicketsController(mockTicketRepository.Object, mockProjectRepository.Object);
 
+        // Create sample ticket with comment
         var comments = new List<Comment>()
         {
             new Comment
@@ -78,7 +80,6 @@ public class TicketsControllerTests
                 CommentDate = DateTime.Parse("2024-05-09 09:31:00"),
             }
         };
-
         var ticket = new Ticket()
         {
             TicketId = 2,
@@ -97,32 +98,35 @@ public class TicketsControllerTests
         var result = await controller.CreateTicket(ticket);
 
         // Assert
+        // Retreives ticket from mock repo
         var createdTicket = (await mockTicketRepository.Object.GetTicketById(ticket.TicketId));
 
+        // Checks its not null and equal to the ticket we passed in
         Assert.NotNull(createdTicket);
         Assert.Equal(ticket, createdTicket);
 
+        // By redirecting to index we can assume that the operation was performed successfully
         var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
         Assert.Equal("Index", redirectToActionResult.ActionName);
     }
 
+    // Test to ensure that EditTicket action redirects to EditTicket action after successful edit
     [Fact]
     public async Task EditTicket_Redirects_To_EditTicket_After_Success()
     {
         // Arrange
-        var projectId = 1; // Set up the project ID
-        var ticketId = 3; // Set up tiket ID
+        var projectId = 1; 
+        var ticketId = 3;
 
         var mockProjectRepository = RepositoryMocks.GetProjectRepository();
         var mockTicketRepository = RepositoryMocks.GetTicketRepository();
-
 
         // Set the CurrentProject property directly
         CurrentProjectSingleton.Instance.CurrentProject = new BugTracker.Models.Project { ProjectId = projectId };
 
         var controller = new TicketsController(mockTicketRepository.Object, mockProjectRepository.Object);
 
-
+        // Create sample ticket with comment
         var comments = new List<Comment>()
         {
             new Comment
@@ -134,7 +138,6 @@ public class TicketsControllerTests
                 CommentDate = DateTime.Parse("2024-05-09 09:31:00"),
             }
         };
-
         var ticket = new Ticket()
         {
             TicketId = ticketId,
@@ -153,12 +156,14 @@ public class TicketsControllerTests
         var result = await controller.EditTicket(ticketId, ticket);
 
         // Assert
+        // By redirecting to index we can assume that the operation was performed successfully
         var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
         Assert.Equal("EditTicket", redirectToActionResult.ActionName);
         Assert.Equal("Tickets", redirectToActionResult.ControllerName);
         Assert.Equal(ticketId, redirectToActionResult.RouteValues["id"]);
     }
 
+    // Test to ensure that DeleteConfirmed action redirects to Index action after deleting a ticket
     [Fact]
     public async Task DeleteConfirmed_Redirects_To_Index_After_Deleting_Ticket()
     {
@@ -169,7 +174,6 @@ public class TicketsControllerTests
         var mockProjectRepository = RepositoryMocks.GetProjectRepository();
         var mockTicketRepository = RepositoryMocks.GetTicketRepository();
 
-
         // Set the CurrentProject property directly
         CurrentProjectSingleton.Instance.CurrentProject = new BugTracker.Models.Project { ProjectId = projectId };
 
@@ -179,12 +183,14 @@ public class TicketsControllerTests
         var result = await controller.DeleteConfirmed(ticketId);
 
         // Assert
+        // By redirecting to index we can assume that the operation was performed successfully
         var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
         Assert.Equal("Index", redirectToActionResult.ActionName);
         Assert.Equal("Tickets", redirectToActionResult.ControllerName);
         Assert.Equal(CurrentProjectSingleton.Instance.CurrentProject.ProjectId, redirectToActionResult.RouteValues["projectId"]);
     }
 
+    // Test to ensure that AddComment action redirects to EditTicket action after adding a comment
     [Fact]
     public async Task AddComment_Redirects_To_EditTicket_After_Adding_Comment()
     {
@@ -215,6 +221,7 @@ public class TicketsControllerTests
         var result = await controller.AddComment(ticketId, comment);
 
         // Assert
+        // By redirecting to index we can assume that the operation was performed successfully
         var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
         Assert.Equal("EditTicket", redirectToActionResult.ActionName);
         Assert.Equal("Tickets", redirectToActionResult.ControllerName);
