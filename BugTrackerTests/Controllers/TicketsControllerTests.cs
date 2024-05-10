@@ -5,6 +5,8 @@ using BugTracker.Utility;
 using BugTrackerTests.Mocks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Build.Evaluation;
+using Microsoft.CodeAnalysis;
 using Moq;
 using System.Security.Claims;
 using System.Xml.Linq;
@@ -54,13 +56,14 @@ public class TicketsControllerTests
     public async Task CreateTicket_ReturnsRedirectToAction()
     {
         // Arrange
+        var projectId = 1; // Set up the project ID
+
         var mockProjectRepository = RepositoryMocks.GetProjectRepository();
         var mockTicketRepository = RepositoryMocks.GetTicketRepository();
 
-        var projectId = 1; // Set up the project ID
 
         // Set the CurrentProject property directly
-        CurrentProjectSingleton.Instance.CurrentProject = new Project { ProjectId = projectId };
+        CurrentProjectSingleton.Instance.CurrentProject = new BugTracker.Models.Project { ProjectId = projectId };
 
         var controller = new TicketsController(mockTicketRepository.Object, mockProjectRepository.Object);
 
@@ -103,5 +106,118 @@ public class TicketsControllerTests
         Assert.Equal("Index", redirectToActionResult.ActionName);
     }
 
+    [Fact]
+    public async Task EditTicket_Redirects_To_EditTicket_After_Success()
+    {
+        // Arrange
+        var projectId = 1; // Set up the project ID
+        var ticketId = 3; // Set up tiket ID
 
+        var mockProjectRepository = RepositoryMocks.GetProjectRepository();
+        var mockTicketRepository = RepositoryMocks.GetTicketRepository();
+
+
+        // Set the CurrentProject property directly
+        CurrentProjectSingleton.Instance.CurrentProject = new BugTracker.Models.Project { ProjectId = projectId };
+
+        var controller = new TicketsController(mockTicketRepository.Object, mockProjectRepository.Object);
+
+
+        var comments = new List<Comment>()
+        {
+            new Comment
+            {
+                TicketId = ticketId,
+                CommentId = 3,
+                CommentText = "Sample comment",
+                CommentedBy = "user1@email.com",
+                CommentDate = DateTime.Parse("2024-05-09 09:31:00"),
+            }
+        };
+
+        var ticket = new Ticket()
+        {
+            TicketId = ticketId,
+            ProjectId = 1,
+            Title = "test",
+            Description = "test ticket",
+            StatusId = 1,
+            AssigneeEmail = "user2@email.com",
+            ReporterEmail = "user1@email.com",
+            DateCreated = DateTime.Parse("2024-05-08 09:00:00"),
+            LastUpdateTime = DateTime.Parse("2024-05-09 09:30:00"),
+            Comments = comments // Assign comments here
+        };
+
+        // Act
+        var result = await controller.EditTicket(ticketId, ticket);
+
+        // Assert
+        var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("EditTicket", redirectToActionResult.ActionName);
+        Assert.Equal("Tickets", redirectToActionResult.ControllerName);
+        Assert.Equal(ticketId, redirectToActionResult.RouteValues["id"]);
+    }
+
+    [Fact]
+    public async Task DeleteConfirmed_Redirects_To_Index_After_Deleting_Ticket()
+    {
+        // Arrange
+        var ticketId = 1;
+        var projectId = 1;
+
+        var mockProjectRepository = RepositoryMocks.GetProjectRepository();
+        var mockTicketRepository = RepositoryMocks.GetTicketRepository();
+
+
+        // Set the CurrentProject property directly
+        CurrentProjectSingleton.Instance.CurrentProject = new BugTracker.Models.Project { ProjectId = projectId };
+
+        var controller = new TicketsController(mockTicketRepository.Object, mockProjectRepository.Object);
+
+        // Act
+        var result = await controller.DeleteConfirmed(ticketId);
+
+        // Assert
+        var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Index", redirectToActionResult.ActionName);
+        Assert.Equal("Tickets", redirectToActionResult.ControllerName);
+        Assert.Equal(CurrentProjectSingleton.Instance.CurrentProject.ProjectId, redirectToActionResult.RouteValues["projectId"]);
+    }
+
+    [Fact]
+    public async Task AddComment_Redirects_To_EditTicket_After_Adding_Comment()
+    {
+        // Arrange
+        var ticketId = 1;
+        var projectId = 1;
+
+        var mockProjectRepository = RepositoryMocks.GetProjectRepository();
+        var mockTicketRepository = RepositoryMocks.GetTicketRepository();
+
+
+        // Set the CurrentProject property directly
+        CurrentProjectSingleton.Instance.CurrentProject = new BugTracker.Models.Project { ProjectId = projectId };
+
+        var controller = new TicketsController(mockTicketRepository.Object, mockProjectRepository.Object);
+
+
+        var comment = new Comment()
+        {
+            TicketId = ticketId,
+            CommentId = 4,
+            CommentText = "Sample comment",
+            CommentedBy = "user1@email.com",
+            CommentDate = DateTime.Parse("2024-05-09 09:31:00"),
+        };
+
+        // Act
+        var result = await controller.AddComment(ticketId, comment);
+
+        // Assert
+        var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("EditTicket", redirectToActionResult.ActionName);
+        Assert.Equal("Tickets", redirectToActionResult.ControllerName);
+        Assert.Equal(ticketId, redirectToActionResult.RouteValues["id"]);
+    }
 }

@@ -220,6 +220,24 @@ namespace BugTrackerTests.Mocks
                         comments.AddRange(ticket.Comments);
                 });
 
+            // Update Ticket
+            // Does not alter mock repository
+            // We are just checking that it validates properly
+            mockTicketRepository.Setup(repo => repo.UpdateTicket(It.IsAny<Ticket>()))
+                .Returns(Task.CompletedTask);
+
+            // Update Ticket
+            // Does not alter mock repository
+            // We are just checking that it validates properly
+            mockTicketRepository.Setup(repo => repo.DeleteTicketById(It.IsAny<int>()))
+                .Returns(Task.CompletedTask);
+
+            // Add comment to ticket
+            // Does not alter mock repository
+            // We are just checking that it validates properly
+            mockTicketRepository.Setup(repo => repo.AddCommentToTicket(It.IsAny<Ticket>(), It.IsAny<Comment>()))
+                .Returns(Task.CompletedTask);
+
 
             return mockTicketRepository;
         }
