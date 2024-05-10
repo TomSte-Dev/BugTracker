@@ -1,6 +1,7 @@
 ﻿using BugTracker.Models;
 using BugTracker.Repositories;
 using Microsoft.CodeAnalysis;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 
 namespace BugTrackerTests.Mocks
@@ -111,6 +112,39 @@ namespace BugTrackerTests.Mocks
 
                     return userEmails;
                 });
+
+
+            mockProjectRepository.Setup(repo => repo.UpdateProjectUser(It.IsAny<ProjectUser>()))
+                .Returns(Task.CompletedTask)
+                .Callback<ProjectUser>((newProjectUser) =>
+                {
+                    users.Add(newProjectUser);
+
+                });
+
+            // Delete project user
+            // No call back and deletion from mock repo as it is not needed for testing
+            // We are just checking that it validates properly and redirects
+            mockProjectRepository.Setup(repo => repo.DeleteProjectUser(It.IsAny<int>()))
+                .Returns(Task.CompletedTask);
+
+            // Add project user
+            // No call back and addition from mock repo as it is not needed for testing
+            // We are just checking that it validates properly
+            mockProjectRepository.Setup(repo => repo.AddProjectUser(It.IsAny<ProjectUser>()))
+                .Returns(Task.CompletedTask);
+
+            // Update project
+            // Does not alter mock repository
+            // We are just checking that it validates properly
+            mockProjectRepository.Setup(repo => repo.UpdateProject(It.IsAny<BugTracker.Models.Project>()))
+                .Returns(Task.CompletedTask);
+
+            // Delete project
+            // Does not alter mock repository
+            // We are just checking that it validates properly
+            mockProjectRepository.Setup(repo => repo.DeleteProjectById(It.IsAny<int>()))
+                .Returns(Task.CompletedTask);
 
             return mockProjectRepository;
         }

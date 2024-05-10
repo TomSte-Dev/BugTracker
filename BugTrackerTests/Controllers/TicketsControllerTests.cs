@@ -102,4 +102,6 @@ public class TicketsControllerTests
         var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
         Assert.Equal("Index", redirectToActionResult.ActionName);
     }
+
+
 }
