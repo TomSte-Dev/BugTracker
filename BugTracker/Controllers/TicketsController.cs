@@ -127,7 +127,6 @@ public class TicketsController : Controller
         }
     }
 
-
     // GET: Tickets/EditTicket/5
     // Displays the form for editing a ticket with the specified id
     public async Task<IActionResult> EditTicket(int? id)
@@ -239,7 +238,6 @@ public class TicketsController : Controller
         // Redirect to the ticket index page for the current project
         return RedirectToAction("Index", "Tickets", new { CurrentProjectSingleton.Instance.CurrentProject.ProjectId });
     }
-
 
     // POST: Tickets/AddComment/5
     // Handles the addition of a comment to a ticket

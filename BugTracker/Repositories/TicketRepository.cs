@@ -84,5 +84,4 @@ public class TicketRepository : ITicketRepository
         // Save changes to the database
         await _context.SaveChangesAsync();
     }
-
 }

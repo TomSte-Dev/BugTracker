@@ -10,6 +10,7 @@ namespace BugTrackerTests.Mocks
     {
         public static Mock<IProjectRepository> GetProjectRepository()
         {
+            // Create mock data for reteival from the mock repository
             var roles = new List<Role>
             {
                 new Role()
@@ -24,7 +25,6 @@ namespace BugTrackerTests.Mocks
                     Title = "User"
                 }
             };
-
             var projects = new List<BugTracker.Models.Project>
             {
                 new BugTracker.Models.Project()
@@ -34,7 +34,6 @@ namespace BugTrackerTests.Mocks
                     Description = "Sample Project Description"
                 }
             };
-
             var users = new List<ProjectUser>
             {
                 new ProjectUser()
@@ -46,16 +45,19 @@ namespace BugTrackerTests.Mocks
                 }
             };
 
-
-
+            // Initialise repository 
             var mockProjectRepository = new Mock<IProjectRepository>();
+
+            // Setup attributes
             mockProjectRepository.Setup(repo => repo.AllRoles).Returns(roles);
             mockProjectRepository.Setup(repo => repo.AllProjects).Returns(projects);
 
+            //Setup methods
             // Return a project given an id
             mockProjectRepository.Setup(repo => repo.GetProjectById(It.IsAny<int>()))
                 .ReturnsAsync((int id) => projects.FirstOrDefault(p => p.ProjectId == id));
 
+            // Checks user is assigned to project
             mockProjectRepository.Setup(repo => repo.IsUserAssignedToProject(It.IsAny<int?>(), It.IsAny<string?>()))
                 .ReturnsAsync((int? projectId, string? user) =>
                 {
@@ -64,7 +66,7 @@ namespace BugTrackerTests.Mocks
                     return(isAssigned);
                 });
 
-            // Setup the AddProject method to actually add projects to the list
+            // Setup the AddProject method to actually add projects to the list in the mock repository
             mockProjectRepository.Setup(repo => repo.AddProject(It.IsAny<BugTracker.Models.Project>(), It.IsAny<string>()))
                 .Returns(Task.CompletedTask)
                 .Callback<BugTracker.Models.Project, string>((project, userEmail) =>
@@ -73,14 +75,13 @@ namespace BugTrackerTests.Mocks
                     projects.Add(project);
                     var newProjectUser = new ProjectUser()
                     {
-                        ProjectUserId = 2, // Doesnt matter for testing purposes but as we have a default user at 1 2 should do
+                        ProjectUserId = 2,
                         ProjectId = project.ProjectId,
                         RoleId = 1,
                         UserEmail = userEmail
                     };
                     users.Add(newProjectUser);
                 });
-
 
             // Provide a list of projects given a user email
             mockProjectRepository.Setup(repo => repo.GetProjectsByUser(It.IsAny<string>()))
@@ -100,10 +101,11 @@ namespace BugTrackerTests.Mocks
                     return Task.FromResult<IEnumerable<BugTracker.Models.Project>>(userProjects);
                 });
 
+            // Gets a list pf user emails by a given projects id
             mockProjectRepository.Setup(repo => repo.GetUserEmailsByProjectId(It.IsAny<int>()))
                 .ReturnsAsync((int? id) =>
                 {
-                    // Assuming _context is your DbContext instance
+                    // filters for a loist of distinct user emails
                     var userEmails = users
                         .Where(u => u.ProjectId == id)
                         .Select(u => u.UserEmail)
@@ -113,7 +115,7 @@ namespace BugTrackerTests.Mocks
                     return userEmails;
                 });
 
-
+            // Updates a project user by overwriting the previously stored index
             mockProjectRepository.Setup(repo => repo.UpdateProjectUser(It.IsAny<ProjectUser>()))
                 .Returns(Task.CompletedTask)
                 .Callback<ProjectUser>((newProjectUser) =>
@@ -151,6 +153,7 @@ namespace BugTrackerTests.Mocks
 
         public static Mock<ITicketRepository> GetTicketRepository()
         {
+            // Create mock data for reteival from the mock repository
             var statuses = new List<Status>
             {
                 new Status()
@@ -171,7 +174,6 @@ namespace BugTrackerTests.Mocks
                     Name = "Done"
                 }
             };
-
             var comments = new List<Comment>
             {
                 new Comment()
@@ -184,7 +186,6 @@ namespace BugTrackerTests.Mocks
 
                 }
             };
-
             var tickets = new List<Ticket>
             {
                 new Ticket()
@@ -202,21 +203,26 @@ namespace BugTrackerTests.Mocks
                 }
             };
 
+            // Initialise the mock ticket repository
             var mockTicketRepository = new Mock<ITicketRepository>();
+
+            // Setup attributes
             mockTicketRepository.Setup(repo => repo.AllStatuses).Returns(statuses);
             mockTicketRepository.Setup(repo => repo.AllTickets).Returns(tickets);
 
+            // Setup methods
+            // Gets a ticket by a given id
             mockTicketRepository.Setup(repo => repo.GetTicketById(It.IsAny<int>()))
                 .ReturnsAsync((int id) => tickets.FirstOrDefault(t => t.TicketId == id));
 
-
+            // Adds a ticket by overwriting the previously stored index
             mockTicketRepository.Setup(repo => repo.AddTicket(It.IsAny<Ticket>()))
                 .Returns(Task.CompletedTask)
                 .Callback<Ticket>((ticket) =>
                 {
                     // Add the project to the list
                     tickets.Add(ticket);
-                    if (ticket.Comments != null)
+                    if (ticket.Comments != null) // Ensures comments are added if provided
                         comments.AddRange(ticket.Comments);
                 });
 
@@ -237,7 +243,6 @@ namespace BugTrackerTests.Mocks
             // We are just checking that it validates properly
             mockTicketRepository.Setup(repo => repo.AddCommentToTicket(It.IsAny<Ticket>(), It.IsAny<Comment>()))
                 .Returns(Task.CompletedTask);
-
 
             return mockTicketRepository;
         }

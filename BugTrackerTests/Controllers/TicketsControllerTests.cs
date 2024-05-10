@@ -1,15 +1,10 @@
 ﻿using BugTracker.Controllers;
 using BugTracker.Models;
-using BugTracker.Repositories;
 using BugTracker.Utility;
 using BugTrackerTests.Mocks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Build.Evaluation;
-using Microsoft.CodeAnalysis;
-using Moq;
 using System.Security.Claims;
-using System.Xml.Linq;
 
 namespace BugTrackerTests.Controllers;
 

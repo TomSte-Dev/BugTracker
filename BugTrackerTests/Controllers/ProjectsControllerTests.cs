@@ -4,9 +4,7 @@ using BugTracker.Utility;
 using BugTrackerTests.Mocks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Build.Evaluation;
 using Microsoft.CodeAnalysis;
-using Moq;
 using System.Security.Claims;
 using Project = BugTracker.Models.Project;
 
@@ -14,6 +12,7 @@ namespace BugTrackerTests.Controllers;
 
 public class ProjectsControllerTests
 {
+    // Test method to ensure that Index action returns projects for the user
     [Fact]
     public async Task Index_ReturnsProjectsForUser()
     {
@@ -50,17 +49,18 @@ public class ProjectsControllerTests
         Assert.Equal(1, userProject.ProjectId); // Check that the project ID is 1
     }
 
+    // Test method to ensure that CreateProject action adds a project to the repository and redirects to Index
     [Fact]
     public async Task CreateProject_AddsProjectToRepository_RedirectsToIndex()
     {
         // Arrange
         var mockProjectRepository = RepositoryMocks.GetProjectRepository();
 
+        // Mock User.Identity.Name
         var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
         {
             new Claim(ClaimTypes.Name, "user1@email.com")
         }));
-
         var controllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext { User = user }
@@ -71,6 +71,7 @@ public class ProjectsControllerTests
             ControllerContext = controllerContext
         };
 
+        // Create sample project to pas into createProject
         var project = new Project
         {
             ProjectId = 2,
@@ -82,29 +83,34 @@ public class ProjectsControllerTests
         var result = await controller.CreateProject(project);
 
         // Assert
+        // Retreive the created project from the mock repo
         var createdProject = (await mockProjectRepository.Object.GetProjectsByUser(user.Identity.Name))
             .Where(p => p.ProjectId == project.ProjectId)
             .FirstOrDefault();
+
+        // Check that its not null and that the passed in project is the same as the retieved
         Assert.NotNull(createdProject);
         Assert.Equal(project.Title, createdProject.Title);
         Assert.Equal(project.Description, createdProject.Description);
 
+        // Redirection confirms success of the operation
         var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
         Assert.Equal("Index", redirectToActionResult.ActionName);
     }
 
+    // Test method to ensure that TeamMembers action returns Unauthorized for non-assigned user
     [Fact]
     public async Task TeamMembers_Returns_Unauthorized_For_Non_Assigned_User()
     {
         // Arrange
-        var projectId = 1; // Sample project ID
+        var projectId = 1;
         var mockProjectRepository = RepositoryMocks.GetProjectRepository();
 
+        // Mock User.Identity.Name
         var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
         {
             new Claim(ClaimTypes.Name, "user1@email.com")
         }));
-
         var controllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext { User = user }
@@ -122,22 +128,24 @@ public class ProjectsControllerTests
         var result = await controller.TeamMembers(projectId);
 
         // Assert
+        // Check for unauthorized status code
         var unauthorizedResult = Assert.IsType<UnauthorizedResult>(result);
         Assert.Equal(401, unauthorizedResult.StatusCode);
     }
 
+    // Test method to ensure that TeamMembers action returns ViewResult for assigned user
     [Fact]
-    public async Task TeamMembers_Returns_ViewResult_For_Assigned_User()
+    public async Task TeamMembers_Returns_ViewResult_For_TeamMembers()
     {
         // Arrange
-        var projectId = 1; // Sample project ID
+        var projectId = 1; 
         var mockProjectRepository = RepositoryMocks.GetProjectRepository();
 
+        // Mock User.Identity.Name
         var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
         {
             new Claim(ClaimTypes.Name, "user1@email.com")
         }));
-
         var controllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext { User = user }
@@ -155,23 +163,25 @@ public class ProjectsControllerTests
         var result = await controller.TeamMembers(projectId);
 
         // Assert
+        // Checks for a view result with a valid model that is of type IEnumerable<ProjectUser>
         var viewResult = Assert.IsType<ViewResult>(result);
         Assert.NotNull(viewResult.Model);
-        var model = Assert.IsAssignableFrom<IEnumerable<ProjectUser>>(viewResult.Model);
-        // Add more assertions as needed
+        Assert.IsAssignableFrom<IEnumerable<ProjectUser>>(viewResult.Model);
     }
 
+    // Test method to ensure that EditTeamMember action returns Unauthorized for non-admin user
     [Fact]
     public async Task EditTeamMember_Returns_Unauthorized_For_Non_Admin_User()
     {
         // Arrange
-        var id = 1; // Sample project user ID
+        var id = 1; 
         var mockProjectRepository = RepositoryMocks.GetProjectRepository();
         var controller = new ProjectsController(mockProjectRepository.Object);
 
         // Set the CurrentUserRole property directly
         CurrentProjectSingleton.CurrentUserRole = "User";
 
+        // Create sample project user
         var projectUser = new ProjectUser()
         {
             ProjectId = id,
@@ -184,10 +194,12 @@ public class ProjectsControllerTests
         var result = await controller.EditTeamMember(id, projectUser);
 
         // Assert
+        // Check for unauthorized status code
         var unauthorizedResult = Assert.IsType<UnauthorizedResult>(result);
         Assert.Equal(401, unauthorizedResult.StatusCode);
     }
 
+    // Test method to ensure that EditTeamMember action returns NotFound for null ID
     [Fact]
     public async Task EditTeamMember_Returns_NotFound_For_Null_Id()
     {
@@ -202,16 +214,19 @@ public class ProjectsControllerTests
         var result = await controller.EditTeamMember(null, new ProjectUser());
 
         // Assert
+        // Check for 404 status code
         var notFoundResult = Assert.IsType<NotFoundResult>(result);
         Assert.Equal(404, notFoundResult.StatusCode);
     }
 
+    // Test method to ensure that EditTeamMember action redirects to TeamMembers action for valid input
     [Fact]
     public async Task EditTeamMember_Returns_RedirectToAction_For_Valid_Input()
     {
         // Arrange
-        var id = 1; // Sample project user ID
+        var id = 1;
         var projectId = 1;
+
         var mockProjectRepository = RepositoryMocks.GetProjectRepository();
         var controller = new ProjectsController(mockProjectRepository.Object);
 
@@ -220,6 +235,7 @@ public class ProjectsControllerTests
         // Set the CurrentUserRole property directly
         CurrentProjectSingleton.CurrentUserRole = "Admin";
 
+        // Create sample project user
         var projectUser = new ProjectUser()
         {
             ProjectId = projectId,
@@ -232,33 +248,39 @@ public class ProjectsControllerTests
         var result = await controller.EditTeamMember(id, projectUser);
 
         // Assert
+        // Check that we are redirected to the right page
+        // From this we can assume the operation was successful
         var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
         Assert.Equal("TeamMembers", redirectToActionResult.ActionName);
         Assert.Equal("Projects", redirectToActionResult.ControllerName);
     }
 
+    // Test method to ensure that RemoveTeamMember action returns Unauthorized for non-admin user
     [Fact]
     public async Task RemoveTeamMember_Returns_Unauthorized_For_Non_Admin_User()
     {
         // Arrange
-        var id = 1; // Sample project user ID
+        var id = 1;
         var mockProjectRepository = RepositoryMocks.GetProjectRepository();
         var controller = new ProjectsController(mockProjectRepository.Object);
+
         CurrentProjectSingleton.CurrentUserRole = "User"; // Set user role
 
         // Act
         var result = await controller.RemoveTeamMember(id);
 
         // Assert
+        // Check for unauthorized status code
         var unauthorizedResult = Assert.IsType<UnauthorizedResult>(result);
         Assert.Equal(401, unauthorizedResult.StatusCode);
     }
 
+    // Test method to ensure that RemoveTeamMember action redirects to TeamMembers action for valid input
     [Fact]
     public async Task RemoveTeamMember_Returns_RedirectToAction_For_Valid_Input()
     {
         // Arrange
-        var id = 1; // Sample project user ID
+        var id = 1;
         var projectId = 1;
         var mockProjectRepository = RepositoryMocks.GetProjectRepository();
         var controller = new ProjectsController(mockProjectRepository.Object);
@@ -272,11 +294,13 @@ public class ProjectsControllerTests
         var result = await controller.RemoveTeamMember(id);
 
         // Assert
+        // By redirecting we can assume the operation was successful
         var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
         Assert.Equal("TeamMembers", redirectToActionResult.ActionName);
         Assert.Equal("Projects", redirectToActionResult.ControllerName);
     }
 
+    // Test method to ensure that AddPeople action returns Unauthorized for non-admin user
     [Fact]
     public async Task AddPeople_Returns_Unauthorized_For_Non_Admin_User()
     {
@@ -290,6 +314,7 @@ public class ProjectsControllerTests
         // Set the CurrentUserRole property directly
         CurrentProjectSingleton.CurrentUserRole = "User";
 
+        // Create sample user
         var projectUser = new ProjectUser()
         {
             ProjectId = projectId,
@@ -302,10 +327,12 @@ public class ProjectsControllerTests
         var result = await controller.AddPeople(projectUser);
 
         // Assert
+        // Check for unauthorized status code
         var unauthorizedResult = Assert.IsType<UnauthorizedResult>(result);
         Assert.Equal(401, unauthorizedResult.StatusCode);
     }
 
+    // Test method to ensure that AddPeople action redirects to TeamMembers action for admin user
     [Fact]
     public async Task AddPeople_Returns_RedirectToAction()
     {
@@ -319,6 +346,7 @@ public class ProjectsControllerTests
         // Set the CurrentUserRole property directly
         CurrentProjectSingleton.CurrentUserRole = "Admin";
 
+        // Create sampple project user
         var projectUser = new ProjectUser()
         {
             ProjectId = projectId,
@@ -331,11 +359,13 @@ public class ProjectsControllerTests
         var result = await controller.AddPeople(projectUser);
 
         // Assert
+        // By redirecting we can assume the operation was successful
         var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
         Assert.Equal("TeamMembers", redirectToActionResult.ActionName);
         Assert.Equal("Projects", redirectToActionResult.ControllerName);
     }
 
+    // Test method to ensure that EditProject action returns Unauthorized for non-admin user
     [Fact]
     public async Task EditProject_Returns_Unauthorized_For_Non_Admin_User()
     {
@@ -353,15 +383,17 @@ public class ProjectsControllerTests
         var result = await controller.EditProject(1);
 
         // Assert
+        // Check for unauthorized status code
         var unauthorizedResult = Assert.IsType<UnauthorizedResult>(result);
         Assert.Equal(401, unauthorizedResult.StatusCode);
     }
 
+    // Test method to ensure that DeleteConfirmed action redirects to Index action
     [Fact]
     public async Task DeleteConfirmed_Redirects_To_Index()
     {
         // Arrange
-        var projectId = 1; // Sample project ID
+        var projectId = 1; 
         var mockProjectRepository = RepositoryMocks.GetProjectRepository();
 
         var controller = new ProjectsController(mockProjectRepository.Object);
@@ -375,6 +407,7 @@ public class ProjectsControllerTests
         var result = await controller.DeleteConfirmed(projectId);
 
         // Assert
+        // By redirecting we can assume the operation was successful
         var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
         Assert.Equal("Index", redirectToActionResult.ActionName);
     }
